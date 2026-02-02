@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Moon Coins</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Monetag SDK (твой тег) -->
+  <script src='//libtl.com/sdk.js' data-zone='10555515' data-sdk='show_10555515'></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -88,20 +92,32 @@
       localStorage.setItem('moonBalance', balance);
     }
 
-    // Реклама (заглушка)
+    // Функция показа rewarded рекламы от Monetag
     function watchAd() {
       document.getElementById('status').innerText = 'Загружаем рекламу...';
 
-      setTimeout(() => {
-        const reward = Math.floor(Math.random() * (600 - 300 + 1)) + 300;
-        updateBalance(balance + reward);
-        document.getElementById('status').innerText = 
-          `+${reward} коинов! Круто! 🌟`;
-        
+      // Проверяем, что SDK загрузился
+      if (typeof window.show_10555515 !== 'function') {
+        document.getElementById('status').innerText = 'SDK не загрузился. Попробуй позже.';
+        return;
+      }
+
+      // Запускаем показ rewarded рекламы
+      window.show_10555515(function(success) {
+        if (success) {
+          // Пользователь досмотрел → даём награду
+          const reward = Math.floor(Math.random() * (600 - 300 + 1)) + 300;
+          updateBalance(balance + reward);
+          document.getElementById('status').innerText = `+${reward} коинов! Отличный просмотр! 🌟`;
+        } else {
+          document.getElementById('status').innerText = 'Реклама не досмотрена или ошибка 😔';
+        }
+
+        // Очистка статуса через 5 секунд
         setTimeout(() => {
           document.getElementById('status').innerText = '';
         }, 5000);
-      }, 1500);
+      });
     }
   </script>
 </body>
