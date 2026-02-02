@@ -3,110 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Moon App 🌙</title>
+  <title>Moon Coins</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
-      background: url('https://images.unsplash.com/photo-1534790566855-4cb788d389ec?auto=format&fit=crop&q=80&w=2000') no-repeat center center fixed;
+      padding: 0;
+      background: url('https://p2.piqsels.com/preview/967/812/976/night-sky-moon-stars.jpg') no-repeat center center fixed;
       background-size: cover;
       color: white;
       text-align: center;
       min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .container {
-      background: rgba(0, 0, 20, 0.65);
-      border-radius: 16px;
-      padding: 24px;
-      margin: 20px auto;
-      max-width: 420px;
-    }
-    h1 {
-      color: #ffd700;
-      margin: 0 0 12px 0;
-      font-size: 32px;
-      text-shadow: 0 0 10px #ffd700;
-    }
-    p.subtitle {
-      font-size: 18px;
-      margin: 0 0 24px 0;
-      opacity: 0.9;
-    }
-    #user-info {
-      font-size: 18px;
-      margin-bottom: 30px;
-      color: #a0d0ff;
+      background: rgba(10, 10, 30, 0.70);
+      border-radius: 24px;
+      padding: 40px 24px;
+      max-width: 380px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
     }
     #balance {
-      font-size: 36px;
+      font-size: 48px;
       font-weight: bold;
       color: #ffd700;
-      margin: 20px 0 30px 0;
-      text-shadow: 0 0 15px #ffd700;
+      margin: 0 0 40px 0;
+      text-shadow: 0 0 20px #ffd70080;
     }
     button {
-      padding: 18px 40px;
-      font-size: 20px;
-      margin: 12px auto;
-      background: linear-gradient(135deg, #0066ff, #00aaff);
+      padding: 20px 50px;
+      font-size: 22px;
+      background: linear-gradient(135deg, #0066ff, #00ccff);
       color: white;
       border: none;
-      border-radius: 50px;
+      border-radius: 60px;
       cursor: pointer;
-      box-shadow: 0 6px 20px rgba(0, 102, 255, 0.4);
-      transition: all 0.2s;
-      display: block;
-      width: 90%;
-      max-width: 340px;
+      box-shadow: 0 8px 30px rgba(0, 102, 255, 0.5);
+      transition: all 0.3s;
+      width: 100%;
+      max-width: 320px;
     }
     button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(0, 102, 255, 0.6);
+      transform: scale(1.05);
+      box-shadow: 0 12px 40px rgba(0, 102, 255, 0.7);
     }
     #status {
-      font-size: 18px;
-      margin-top: 20px;
-      min-height: 40px;
-      color: #00ffaa;
+      font-size: 20px;
+      margin-top: 30px;
+      min-height: 50px;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc80;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Привет, Moon! 🌙</h1>
-    <p class="subtitle">Это твой Telegram Mini App</p>
-    
-    <p id="user-info">Загрузка...</p>
-    
     <div id="balance">Баланс: 500 коинов ★</div>
     
     <button onclick="watchAd()">
       Смотреть рекламу → +300–600 коинов
     </button>
 
-    <p id="status"></p>
+    <div id="status"></div>
   </div>
 
   <script>
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
 
-    // Показываем имя пользователя корректно
-    function showUser() {
-      const user = Telegram.WebApp.initDataUnsafe.user;
-      if (user) {
-        let name = user.first_name;
-        if (user.last_name) name += ' ' + user.last_name;
-        let username = user.username ? '@' + user.username : 'нет username';
-        document.getElementById('user-info').innerText = `Ты: \( {name} ( \){username})`;
-      } else {
-        document.getElementById('user-info').innerText = 'Не удалось загрузить профиль';
-      }
-    }
-
-    // Баланс и экономика
+    // Баланс
     let balance = localStorage.getItem('moonBalance') 
       ? parseInt(localStorage.getItem('moonBalance')) 
       : 500;
@@ -114,31 +83,26 @@
     document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
 
     function updateBalance(newBalance) {
-      balance = Math.max(newBalance, 100); // не падает ниже 100
+      balance = Math.max(newBalance, 100);
       document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
       localStorage.setItem('moonBalance', balance);
     }
 
-    // Реклама (заглушка пока)
+    // Реклама (заглушка)
     function watchAd() {
-      document.getElementById('status').innerText = 'Реклама загружается...';
+      document.getElementById('status').innerText = 'Загружаем рекламу...';
 
       setTimeout(() => {
-        // Рандомная награда 300–600
         const reward = Math.floor(Math.random() * (600 - 300 + 1)) + 300;
         updateBalance(balance + reward);
         document.getElementById('status').innerText = 
-          `+${reward} коинов! Отличный просмотр! 🌟`;
+          `+${reward} коинов! Круто! 🌟`;
         
-        // Через 3 секунды статус пропадает
         setTimeout(() => {
           document.getElementById('status').innerText = '';
-        }, 4000);
-      }, 1800); // симуляция 1.8 секунды
+        }, 5000);
+      }, 1500);
     }
-
-    // Запускаем при загрузке
-    showUser();
   </script>
 </body>
 </html>
