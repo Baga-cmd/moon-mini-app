@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Moon App 🌙</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #0f0f17;
+      color: white;
+      text-align: center;
+    }
+    h1 { color: #00ffaa; }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      margin: 10px;
+      background: #0066ff;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    button:hover { background: #0055dd; }
+  </style>
+</head>
+<body>
+  <h1>Привет, Moon! 🌙</h1>
+  <p>Это твой Telegram Mini App. Работает!</p>
+  
+  <button onclick="Telegram.WebApp.showAlert('Ты в приложении!')">Тест алерт</button>
+  <button onclick="showUser()">Кто я?</button>
+
+  <p id="user-info">Загрузка...</p>
+
+  <script>
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand(); // на весь экран
+
+    function showUser() {
+      const user = Telegram.WebApp.initDataUnsafe.user;
+      if (user) {
+        document.getElementById('user-info').innerText = 
+          `Ты: ${user.first_name} \( {user.last_name || ''} (@ \){user.username || 'нет'})`;
+      } else {
+        document.getElementById('user-info').innerText = 'Не удалось получить данные';
+      }
+    }
+
+    // Показываем инфу сразу
+    showUser();
+  </script>
+</body>
+</html>
