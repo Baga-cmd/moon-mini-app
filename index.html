@@ -92,32 +92,36 @@
       localStorage.setItem('moonBalance', balance);
     }
 
-    // Функция показа rewarded рекламы от Monetag
+    // Реклама Monetag — Promise версия (как в документации)
     function watchAd() {
       document.getElementById('status').innerText = 'Загружаем рекламу...';
 
-      // Проверяем, что SDK загрузился
       if (typeof window.show_10555515 !== 'function') {
         document.getElementById('status').innerText = 'SDK не загрузился. Попробуй позже.';
+        console.error('Monetag SDK function show_10555515 not found');
         return;
       }
 
-      // Запускаем показ rewarded рекламы
-      window.show_10555515(function(success) {
-        if (success) {
-          // Пользователь досмотрел → даём награду
+      console.log('Запускаем Monetag Rewarded Interstitial...');
+
+      window.show_10555515()
+        .then(() => {
+          // Срабатывает после подтверждённого досмотра рекламы
           const reward = Math.floor(Math.random() * (600 - 300 + 1)) + 300;
           updateBalance(balance + reward);
-          document.getElementById('status').innerText = `+${reward} коинов! Отличный просмотр! 🌟`;
-        } else {
+          document.getElementById('status').innerText = `+${reward} коинов! Успешный просмотр! 🌟`;
+          console.log('Реклама досмотрена → награда выдана');
+        })
+        .catch((err) => {
+          // Ошибка, прерывание, не досмотрено
           document.getElementById('status').innerText = 'Реклама не досмотрена или ошибка 😔';
-        }
-
-        // Очистка статуса через 5 секунд
-        setTimeout(() => {
-          document.getElementById('status').innerText = '';
-        }, 5000);
-      });
+          console.error('Monetag Rejected / Error:', err);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            document.getElementById('status').innerText = '';
+          }, 5000);
+        });
     }
   </script>
 </body>
