@@ -26,32 +26,88 @@
       cursor: pointer;
     }
     button:hover { background: #0055dd; }
+    #balance {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 30px 0;
+      color: #ffd700;
+    }
+    #status {
+      color: #00ffaa;
+      font-size: 18px;
+      margin-top: 20px;
+      min-height: 30px;
+    }
   </style>
 </head>
 <body>
   <h1>Привет, Moon! 🌙</h1>
   <p>Это твой Telegram Mini App. Работает!</p>
   
+  <!-- Информация о пользователе -->
+  <p id="user-info">Загрузка...</p>
+  
+  <!-- Баланс и реклама -->
+  <div id="balance">Баланс: 100 коинов 🌟</div>
+  
+  <button onclick="watchAd()">
+    Смотреть рекламу → +100 коинов
+  </button>
+  
   <button onclick="Telegram.WebApp.showAlert('Ты в приложении!')">Тест алерт</button>
   <button onclick="showUser()">Кто я?</button>
 
-  <p id="user-info">Загрузка...</p>
+  <p id="status"></p>
 
   <script>
+    // Инициализация Telegram Mini App
     Telegram.WebApp.ready();
-    Telegram.WebApp.expand(); // на весь экран
+    Telegram.WebApp.expand();
 
+    // Показываем данные пользователя
     function showUser() {
       const user = Telegram.WebApp.initDataUnsafe.user;
       if (user) {
+        const last = user.last_name ? ' ' + user.last_name : '';
+        const username = user.username ? '@' + user.username : 'нет username';
         document.getElementById('user-info').innerText = 
-          `Ты: ${user.first_name} \( {user.last_name || ''} (@ \){user.username || 'нет'})`;
+          `Ты: \( {user.first_name} \){last} (${username})`;
       } else {
         document.getElementById('user-info').innerText = 'Не удалось получить данные';
       }
     }
 
-    // Показываем инфу сразу
+    // Баланс
+    let balance = localStorage.getItem('moonBalance') 
+      ? parseInt(localStorage.getItem('moonBalance')) 
+      : 100;
+    
+    document.getElementById('balance').innerText = `Баланс: ${balance} коинов 🌟`;
+
+    function updateBalance(newBalance) {
+      balance = newBalance;
+      document.getElementById('balance').innerText = `Баланс: ${balance} коинов 🌟`;
+      localStorage.setItem('moonBalance', balance);
+      document.getElementById('status').innerText = 'Баланс обновлён!';
+      setTimeout(() => {
+        document.getElementById('status').innerText = '';
+      }, 3000);
+    }
+
+    // Функция просмотра рекламы (заглушка пока)
+    function watchAd() {
+      document.getElementById('status').innerText = 'Реклама загружается... (заглушка)';
+      
+      // Симуляция просмотра рекламы (2 секунды)
+      setTimeout(() => {
+        const reward = 100;
+        updateBalance(balance + reward);
+        document.getElementById('status').innerText = 
+          `+${reward} коинов! Спасибо за просмотр! 🚀`;
+      }, 2000);
+    }
+
+    // Показываем данные пользователя сразу при загрузке
     showUser();
   </script>
 </body>
