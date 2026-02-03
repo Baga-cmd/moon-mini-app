@@ -55,6 +55,11 @@
       transform: scale(1.05);
       box-shadow: 0 12px 40px rgba(0, 102, 255, 0.7);
     }
+    button.disabled {
+      background: gray;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
     #status {
       font-size: 20px;
       margin-top: 30px;
@@ -68,7 +73,7 @@
   <div class="container">
     <div id="balance">Баланс: 500 коинов ★</div>
     
-    <button onclick="watchAd()">
+    <button id="adButton" onclick="watchAd()">
       Смотреть рекламу → +300–600 коинов
     </button>
 
@@ -87,13 +92,67 @@
     document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
 
     function updateBalance(newBalance) {
-      balance = Math.max(newBalance, 100);
+      balance = newBalance; // Убрали Math.max, чтобы баланс мог падать ниже 100 при тратах позже
       document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
       localStorage.setItem('moonBalance', balance);
     }
 
-    // Реклама Monetag — Promise версия (как в документации)
+    // Кулдаун и суточный лимит
+    const COOLDOWN_TIME = 90 * 1000;          // 90 секунд
+    const DAILY_LIMIT = 40;                   // максимум 40 просмотров в сутки
+    let lastAdTime = localStorage.getItem('lastAdTime') ? parseInt(localStorage.getItem('lastAdTime')) : 0;
+    let dailyViews = localStorage.getItem('dailyViews') ? parseInt(localStorage.getItem('dailyViews')) : 0;
+    let dailyDate = localStorage.getItem('dailyDate') || new Date().toDateString();
+
+    const adButton = document.getElementById('adButton');
+
+    function resetDailyIfNeeded() {
+      const today = new Date().toDateString();
+      if (today !== dailyDate) {
+        dailyViews = 0;
+        dailyDate = today;
+        localStorage.setItem('dailyViews', '0');
+        localStorage.setItem('dailyDate', dailyDate);
+      }
+    }
+
+    function updateButtonState() {
+      resetDailyIfNeeded();
+      const now = Date.now();
+      const timeLeft = lastAdTime + COOLDOWN_TIME - now;
+
+      if (dailyViews >= DAILY_LIMIT) {
+        adButton.classList.add('disabled');
+        adButton.disabled = true;
+        adButton.innerText = 'На сегодня хватит рекламы 🌙 Приходи завтра!';
+        return;
+      }
+
+      if (timeLeft > 0) {
+        adButton.classList.add('disabled');
+        adButton.disabled = true;
+        adButton.innerText = `Перезарядка луны: ${Math.ceil(timeLeft / 1000)} сек`;
+        setTimeout(updateButtonState, 1000);
+      } else {
+        adButton.classList.remove('disabled');
+        adButton.disabled = false;
+        adButton.innerText = 'Смотреть рекламу → +300–600 коинов';
+      }
+    }
+
+    // Реклама
     function watchAd() {
+      resetDailyIfNeeded();
+
+      if (dailyViews >= DAILY_LIMIT) {
+        document.getElementById('status').innerText = 'На сегодня лимит просмотров достигнут 🌙';
+        setTimeout(() => { document.getElementById('status').innerText = ''; }, 5000);
+        return;
+      }
+
+      const now = Date.now();
+      if (now - lastAdTime < COOLDOWN_TIME) return;
+
       document.getElementById('status').innerText = 'Загружаем рекламу...';
 
       if (typeof window.show_10555515 !== 'function') {
@@ -106,14 +165,19 @@
 
       window.show_10555515()
         .then(() => {
-          // Срабатывает после подтверждённого досмотра рекламы
           const reward = Math.floor(Math.random() * (600 - 300 + 1)) + 300;
           updateBalance(balance + reward);
           document.getElementById('status').innerText = `+${reward} коинов! Успешный просмотр! 🌟`;
-          console.log('Реклама досмотрена → награда выдана');
+
+          // Обновляем счётчики
+          lastAdTime = Date.now();
+          dailyViews += 1;
+          localStorage.setItem('lastAdTime', lastAdTime);
+          localStorage.setItem('dailyViews', dailyViews);
+
+          updateButtonState();
         })
         .catch((err) => {
-          // Ошибка, прерывание, не досмотрено
           document.getElementById('status').innerText = 'Реклама не досмотрена или ошибка 😔';
           console.error('Monetag Rejected / Error:', err);
         })
@@ -123,6 +187,9 @@
           }, 5000);
         });
     }
+
+    // Инициализация
+    updateButtonState();
   </script>
 </body>
 </html>
