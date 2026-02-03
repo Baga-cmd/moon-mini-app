@@ -63,6 +63,7 @@
     #level { font-size: 20px; margin: 10px 0; color: #ffd700; }
     #upgrades { margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; }
     #chestSection { margin: 20px 0; }
+    .status-message { margin: 15px 0; padding: 10px; border-radius: 10px; background: rgba(255, 215, 0, 0.1); font-size: 16px; min-height: 24px; }
     .coin-fly {
       position: absolute;
       font-size: 24px;
@@ -90,8 +91,8 @@
       </div>
     </div>
 
-    <button id="collectBtn">Собрать (+150–250)</button>
-    <button id="boostBtn">Ускорить через рекламу (+500–1000)</button>
+    <button id="collectBtn"></button>
+    <button id="boostBtn"></button>
 
     <div id="chestSection">
       <div id="chestTimer"></div>
@@ -104,7 +105,7 @@
       <button id="upgradePsi"></button>
     </div>
 
-    <div id="status"></div>
+    <div class="status-message" id="status"></div>
   </div>
 
   <script>
@@ -112,7 +113,7 @@
     Telegram.WebApp.expand();
 
     // Единое состояние
-    let gameState = (() => {
+    const gameState = (() => {
       const defaultState = {
         balance: 500,
         moonLevel: 1,
@@ -126,8 +127,22 @@
         nextChestTime: Date.now() + 6*3600000,
         chestOpened: false
       };
-      const saved = localStorage.getItem('moonEnergyState');
-      return saved ? JSON.parse(saved) : defaultState;
+
+      try {
+        const saved = localStorage.getItem('moonEnergyState');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          // Сброс дневного счётчика при новой дате
+          if (new Date().toDateString() !== parsed.lastResetDate) {
+            parsed.dailyAdCounter = 0;
+            parsed.lastResetDate = new Date().toDateString();
+          }
+          return { ...defaultState, ...parsed };
+        }
+      } catch (e) {
+        console.error('Ошибка загрузки состояния:', e);
+      }
+      return defaultState;
     })();
 
     function saveGameState() {
@@ -180,11 +195,27 @@
       elements.energyCircle.style.setProperty('--progress', progress + '%');
 
       elements.collectBtn.disabled = progress < 100;
-      elements.collectBtn.textContent = `Собрать (+${getBaseReward()})`;
+      elements.collectBtn.textContent = progress >= 100 
+        ? `Собрать (+${getBaseReward()})` 
+        : `Ждите... (${Math.ceil((chargeTimeMs - elapsed) / 1000)} сек)`;
 
-      const adTimeLeft = gameState.lastAdWatchTime + 90*1000 - Date.now();
-      elements.boostBtn.disabled = adTimeLeft > 0 || gameState.dailyAdCounter >= 40;
-      elements.boostBtn.textContent = adTimeLeft > 0 ? `Доступно через \( {Math.ceil(adTimeLeft / 1000)} сек` : (gameState.dailyAdCounter >= 40 ? 'Лимит исчерпан' : `Ускорить через рекламу (+ \){getAdReward()})`);
+      const adCooldown = 90 * 1000;
+      const timeSinceLastAd = Date.now() - gameState.lastAdWatchTime;
+      const adTimeLeft = adCooldown - timeSinceLastAd;
+
+      if (adTimeLeft > 0) {
+        elements.boostBtn.disabled = true;
+        elements.boostBtn.textContent = `Доступно через ${Math.ceil(adTimeLeft / 1000)} сек`;
+        elements.boostBtn.classList.add('disabled');
+      } else if (gameState.dailyAdCounter >= 40) {
+        elements.boostBtn.disabled = true;
+        elements.boostBtn.textContent = 'Лимит на сегодня исчерпан';
+        elements.boostBtn.classList.add('disabled');
+      } else {
+        elements.boostBtn.disabled = false;
+        elements.boostBtn.textContent = `Ускорить через рекламу (+${getAdReward()})`;
+        elements.boostBtn.classList.remove('disabled');
+      }
 
       const chestTimeLeft = gameState.nextChestTime - Date.now();
       if (chestTimeLeft <= 0) {
@@ -200,9 +231,15 @@
         elements.chestBtn.textContent = 'Ждите...';
       }
 
-      elements.upgradeQuantum.textContent = `Квантовый Ускоритель (Lv ${gameState.upgradeQuantum}, ${[0,1200,3000,7500,18000,40000][gameState.upgradeQuantum + 1]} коинов)`;
-      elements.upgradePsi.textContent = `Пси-усилитель (Lv ${gameState.upgradePsi}, ${[0,2000,5000,12000,28000,60000][gameState.upgradePsi + 1]} коинов)`;
-    };
+      const quantumCosts = [1200, 3000, 7500, 18000, 40000];
+      const psiCosts = [2000, 5000, 12000, 28000, 60000];
+
+      const quantumLevel = gameState.upgradeQuantum;
+      const psiLevel = gameState.upgradePsi;
+
+      elements.upgradeQuantum.textContent = `Квантовый Ускоритель (Lv ${quantumLevel}) - ${quantumLevel < 5 ? quantumCosts[quantumLevel] + ' коинов' : 'MAX'}`;
+      elements.upgradePsi.textContent = `Пси-усилитель (Lv ${psiLevel}) - ${psiLevel < 5 ? psiCosts[psiLevel] + ' коинов' : 'MAX'}`;
+    }
 
     setInterval(updateUI, 1000);
     updateUI();
@@ -210,7 +247,8 @@
     // Сбор энергии
     elements.collectBtn.onclick = () => {
       const chargeTimeMs = getChargeTime() * 1000;
-      if (Date.now() - gameState.lastEnergyCollectTime < chargeTimeMs) return;
+      const elapsed = Date.now() - gameState.lastEnergyCollectTime;
+      if (elapsed < chargeTimeMs) return;
 
       const reward = getBaseReward();
       gameState.balance += reward;
@@ -240,11 +278,12 @@
 
     // Ускорить
     elements.boostBtn.onclick = () => {
-      const adTimeLeft = gameState.lastAdWatchTime + 90*1000 - Date.now();
-      if (adTimeLeft > 0 || gameState.dailyAdCounter >= 40) return;
+      const timeSinceLastAd = Date.now() - gameState.lastAdWatchTime;
+      if (timeSinceLastAd < 90000 || gameState.dailyAdCounter >= 40) return;
 
       if (typeof window.show_10555515 !== 'function') {
         elements.status.textContent = 'Реклама недоступна';
+        setTimeout(() => elements.status.textContent = '', 3000);
         return;
       }
 
@@ -289,34 +328,48 @@
 
     // Апгрейды
     elements.upgradeQuantum.onclick = () => {
-      const costs = [0, 1200, 3000, 7500, 18000, 40000];
-      const nextLevel = gameState.upgradeQuantum + 1;
-      if (nextLevel > 5 || gameState.balance < costs[nextLevel]) {
-        elements.status.textContent = 'Недостаточно коинов';
+      const costs = [1200, 3000, 7500, 18000, 40000];
+      const currentLevel = gameState.upgradeQuantum;
+      if (currentLevel >= 5) {
+        elements.status.textContent = 'Максимальный уровень';
+        setTimeout(() => elements.status.textContent = '', 3000);
+        return;
+      }
+      const cost = costs[currentLevel];
+      if (gameState.balance < cost) {
+        elements.status.textContent = `Недостаточно коинов! Нужно: ${cost}`;
+        setTimeout(() => elements.status.textContent = '', 3000);
         return;
       }
 
-      gameState.balance -= costs[nextLevel];
-      gameState.upgradeQuantum = nextLevel;
+      gameState.balance -= cost;
+      gameState.upgradeQuantum += 1;
       saveGameState();
       updateUI();
-      elements.status.textContent = 'Ускоритель улучшен!';
+      elements.status.textContent = `Ускоритель улучшен до Lv ${gameState.upgradeQuantum}!`;
       setTimeout(() => elements.status.textContent = '', 3000);
     };
 
     elements.upgradePsi.onclick = () => {
-      const costs = [0, 2000, 5000, 12000, 28000, 60000];
-      const nextLevel = gameState.upgradePsi + 1;
-      if (nextLevel > 5 || gameState.balance < costs[nextLevel]) {
-        elements.status.textContent = 'Недостаточно коинов';
+      const costs = [2000, 5000, 12000, 28000, 60000];
+      const currentLevel = gameState.upgradePsi;
+      if (currentLevel >= 5) {
+        elements.status.textContent = 'Максимальный уровень';
+        setTimeout(() => elements.status.textContent = '', 3000);
+        return;
+      }
+      const cost = costs[currentLevel];
+      if (gameState.balance < cost) {
+        elements.status.textContent = `Недостаточно коинов! Нужно: ${cost}`;
+        setTimeout(() => elements.status.textContent = '', 3000);
         return;
       }
 
-      gameState.balance -= costs[nextLevel];
-      gameState.upgradePsi = nextLevel;
+      gameState.balance -= cost;
+      gameState.upgradePsi += 1;
       saveGameState();
       updateUI();
-      elements.status.textContent = 'Усилитель улучшен!';
+      elements.status.textContent = `Усилитель улучшен до Lv ${gameState.upgradePsi}!`;
       setTimeout(() => elements.status.textContent = '', 3000);
     };
 
