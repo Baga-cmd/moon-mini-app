@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Moon Energy</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  
-  <!-- Monetag SDK -->
   <script src='//libtl.com/sdk.js' data-zone='10555515' data-sdk='show_10555515'></script>
 
   <style>
@@ -31,19 +29,8 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.6);
       backdrop-filter: blur(10px);
     }
-    #balance {
-      font-size: 36px;
-      font-weight: bold;
-      color: #ffd700;
-      margin: 10px 0 20px;
-      text-shadow: 0 0 15px #ffd70080;
-    }
-    .energy-container {
-      position: relative;
-      width: 180px;
-      height: 180px;
-      margin: 20px auto;
-    }
+    #balance { font-size: 36px; font-weight: bold; color: #ffd700; margin: 10px 0 20px; text-shadow: 0 0 15px #ffd70080; }
+    .energy-container { position: relative; width: 180px; height: 180px; margin: 20px auto; }
     .energy-circle {
       width: 100%;
       height: 100%;
@@ -55,25 +42,9 @@
       box-shadow: 0 0 30px rgba(0,204,255,0.5);
       transition: background 1s ease;
     }
-    .energy-inner {
-      width: 140px;
-      height: 140px;
-      background: rgba(0,0,30,0.8);
-      border-radius: 50%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .energy-text {
-      font-size: 48px;
-      font-weight: bold;
-      color: #00ffcc;
-    }
-    .energy-label {
-      font-size: 16px;
-      opacity: 0.8;
-    }
+    .energy-inner { width: 140px; height: 140px; background: rgba(0,0,30,0.8); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .energy-text { font-size: 48px; font-weight: bold; color: #00ffcc; }
+    .energy-label { font-size: 16px; opacity: 0.8; }
     button {
       padding: 14px 30px;
       font-size: 18px;
@@ -85,40 +56,13 @@
       max-width: 280px;
       transition: all 0.3s;
     }
-    #collectBtn {
-      background: linear-gradient(135deg, #00cc66, #00ff99);
-      color: white;
-      box-shadow: 0 6px 20px rgba(0,204,102,0.4);
-    }
-    #boostBtn, #chestBtn, #upgradeBtn {
-      background: linear-gradient(135deg, #0066ff, #00aaff);
-      color: white;
-      box-shadow: 0 6px 20px rgba(0,102,255,0.5);
-    }
+    #collectBtn { background: linear-gradient(135deg, #00cc66, #00ff99); color: white; box-shadow: 0 6px 20px rgba(0,204,102,0.4); }
+    #boostBtn, #chestBtn { background: linear-gradient(135deg, #0066ff, #00aaff); color: white; box-shadow: 0 6px 20px rgba(0,102,255,0.5); }
     button:hover { transform: scale(1.05); }
-    button.disabled {
-      background: gray !important;
-      cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
-    }
-    #status {
-      font-size: 18px;
-      margin-top: 20px;
-      min-height: 50px;
-      color: #00ffcc;
-    }
-    #level {
-      font-size: 20px;
-      margin: 10px 0;
-      color: #ffd700;
-    }
-    #upgrades {
-      margin: 20px 0;
-      padding: 15px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-    }
+    button.disabled { background: gray !important; cursor: not-allowed; box-shadow: none; transform: none; }
+    #status { font-size: 18px; margin-top: 20px; min-height: 50px; color: #00ffcc; }
+    #level { font-size: 20px; margin: 10px 0; color: #ffd700; }
+    #upgrades { margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; }
     .coin-fly {
       position: absolute;
       font-size: 24px;
@@ -130,23 +74,15 @@
       0% { transform: translateY(0); opacity: 1; }
       100% { transform: translateY(-150px); opacity: 0; }
     }
-    @keyframes levelUpPulse {
-      0% { transform: scale(1); filter: drop-shadow(0 0 10px gold); }
-      50% { transform: scale(1.25); filter: drop-shadow(0 0 30px gold); }
-      100% { transform: scale(1); filter: drop-shadow(0 0 10px gold); }
-    }
-    .level-up { animation: levelUpPulse 1.5s ease; }
-    body.level-five { background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80') no-repeat center center fixed; background-size: cover; }
-    body.level-ten { background: url('https://images.unsplash.com/photo-1447433589675-4aaa569f3e05?auto=format&fit=crop&q=80') no-repeat center center fixed; background-size: cover; }
   </style>
 </head>
-<body class="level-basic">
+<body>
   <div class="container">
     <div id="balance">Баланс: 500 коинов ★</div>
     <div id="level">Уровень Луны: 1 (0/5 энергий)</div>
     
     <div class="energy-container">
-      <div class="energy-circle" id="energyCircle">
+      <div class="energy-circle" id="energyCircle" style="--progress: 0%;">
         <div class="energy-inner">
           <div class="energy-text" id="energyText">0</div>
           <div class="energy-label">Энергия</div>
@@ -157,15 +93,15 @@
     <button id="collectBtn">Собрать (+150–250)</button>
     <button id="boostBtn">Ускорить через рекламу (+500–1000)</button>
 
-    <div id="chestSection" style="margin: 20px 0; display: none;">
-      <div id="chestTimer"></div>
+    <div id="chestSection">
+      <div id="chestTimer">Сундук откроется через...</div>
       <button id="chestBtn">Открыть сундук</button>
     </div>
 
     <div id="upgrades">
-      <h3>Улучшения базы</h3>
+      <h3>Улучшения</h3>
       <button id="upgradeQuantum">Квантовый Ускоритель (Lv 0)</button>
-      <button id="upgradePsi">Пси-усилитель сбора (Lv 0)</button>
+      <button id="upgradePsi">Пси-усилитель (Lv 0)</button>
     </div>
 
     <div id="status"></div>
@@ -175,241 +111,211 @@
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
 
-    // Баланс и прогресс
-    let balance = localStorage.getItem('moonBalance') ? parseInt(localStorage.getItem('moonBalance')) : 500;
-    let moonLevel = localStorage.getItem('moonLevel') ? parseInt(localStorage.getItem('moonLevel')) : 1;
-    let energiesCollected = localStorage.getItem('energiesCollected') ? parseInt(localStorage.getItem('energiesCollected')) : 0;
-    let upgradeQuantum = localStorage.getItem('upgradeQuantum') ? parseInt(localStorage.getItem('upgradeQuantum')) : 0;
-    let upgradePsi = localStorage.getItem('upgradePsi') ? parseInt(localStorage.getItem('upgradePsi')) : 0;
+    // Единое состояние
+    let gameState = (() => {
+      const saved = localStorage.getItem('moonEnergyState');
+      if (saved) return JSON.parse(saved);
 
-    document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
-    document.getElementById('level').innerText = `Уровень Луны: \( {moonLevel} ( \){energiesCollected}/5 энергий)`;
+      return {
+        balance: 500,
+        moonLevel: 1,
+        energiesCollected: 0,
+        upgradeQuantum: 0,
+        upgradePsi: 0,
+        lastEnergyCollectTime: Date.now() - 25000,
+        lastAdWatchTime: 0,
+        dailyAdCounter: 0,
+        lastResetDate: new Date().toDateString(),
+        nextChestTime: Date.now() + 6*60*60*1000,
+        chestOpened: false
+      };
+    })();
 
-    // Кулдаун и лимит
-    const COOLDOWN_TIME = 90 * 1000;
-    const DAILY_BOOST_LIMIT = 40;
-    let lastAdTime = localStorage.getItem('lastAdTime') ? parseInt(localStorage.getItem('lastAdTime')) : 0;
-    let dailyBoosts = localStorage.getItem('dailyBoosts') ? parseInt(localStorage.getItem('dailyBoosts')) : 0;
-    let dailyDate = localStorage.getItem('dailyDate') || new Date().toDateString();
-
-    const boostBtn = document.getElementById('boostBtn');
-
-    function resetDailyIfNeeded() {
-      const today = new Date().toDateString();
-      if (today !== dailyDate) {
-        dailyBoosts = 0;
-        dailyDate = today;
-        localStorage.setItem('dailyBoosts', '0');
-        localStorage.setItem('dailyDate', dailyDate);
-      }
+    function saveGameState() {
+      localStorage.setItem('moonEnergyState', JSON.stringify(gameState));
     }
 
-    function updateBoostButton() {
-      resetDailyIfNeeded();
-      const now = Date.now();
-      const timeLeft = lastAdTime + COOLDOWN_TIME - now;
+    // Формулы
+    function getChargeTime() {
+      return Math.round(25 * Math.pow(0.9, gameState.upgradeQuantum));
+    }
 
-      if (dailyBoosts >= DAILY_BOOST_LIMIT) {
-        boostBtn.classList.add('disabled');
-        boostBtn.disabled = true;
-        boostBtn.innerText = 'Лимит ускорений исчерпан 🌙';
-        return;
-      }
+    function getBaseReward() {
+      const min = 150 + 30 * gameState.upgradePsi;
+      const max = 250 + 50 * gameState.upgradePsi;
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
-      if (timeLeft > 0) {
-        boostBtn.classList.add('disabled');
-        boostBtn.disabled = true;
-        boostBtn.innerText = `Доступно через ${Math.ceil(timeLeft / 1000)} сек`;
-        setTimeout(updateBoostButton, 1000);
+    function getAdReward() {
+      return getBaseReward() * 3 + Math.floor(Math.random() * 201);
+    }
+
+    function getChestReward() {
+      return getBaseReward() * 10 + Math.floor(Math.random() * 2001) + 2000;
+    }
+
+    // UI элементы
+    const elements = {
+      balance: document.getElementById('balance'),
+      level: document.getElementById('level'),
+      energyText: document.getElementById('energyText'),
+      energyCircle: document.getElementById('energyCircle'),
+      collectBtn: document.getElementById('collectBtn'),
+      boostBtn: document.getElementById('boostBtn'),
+      chestTimer: document.getElementById('chestTimer'),
+      chestBtn: document.getElementById('chestBtn'),
+      upgradeQuantum: document.getElementById('upgradeQuantum'),
+      upgradePsi: document.getElementById('upgradePsi'),
+      status: document.getElementById('status')
+    };
+
+    // Обновление UI каждую секунду
+    function updateUI() {
+      elements.balance.textContent = `Баланс: ${gameState.balance} коинов ★`;
+      elements.level.textContent = `Уровень Луны: \( {gameState.moonLevel} ( \){gameState.energiesCollected}/5 энергий)`;
+
+      // Энергия
+      const chargeTimeMs = getChargeTime() * 1000;
+      const elapsed = Date.now() - gameState.lastEnergyCollectTime;
+      let progress = Math.min(100, (elapsed / chargeTimeMs) * 100);
+      elements.energyText.textContent = progress >= 100 ? 'Готово!' : Math.floor(progress);
+      elements.energyCircle.style.setProperty('--progress', progress + '%');
+
+      // Кнопка собрать
+      elements.collectBtn.disabled = progress < 100;
+      elements.collectBtn.textContent = `Собрать (+${getBaseReward()})`;
+
+      // Кнопка ускорить + кулдаун
+      const adTimeLeft = gameState.lastAdWatchTime + 90*1000 - Date.now();
+      if (adTimeLeft > 0 || gameState.dailyAdCounter >= 40) {
+        elements.boostBtn.disabled = true;
+        elements.boostBtn.textContent = adTimeLeft > 0 ? `Доступно через ${Math.ceil(adTimeLeft/1000)} сек` : 'Лимит на сегодня исчерпан';
       } else {
-        boostBtn.classList.remove('disabled');
-        boostBtn.disabled = false;
-        boostBtn.innerText = 'Ускорить через рекламу (+500–1000)';
+        elements.boostBtn.disabled = false;
+        elements.boostBtn.textContent = `Ускорить через рекламу (+${getAdReward()})`;
       }
-    }
 
-    // Зарядка энергии
-    let energy = localStorage.getItem('moonEnergy') ? parseFloat(localStorage.getItem('moonEnergy')) : 0;
-    const CHARGE_TIME = 25000 * Math.pow(0.9, upgradeQuantum);
-    let lastChargeTime = localStorage.getItem('lastChargeTime') ? parseInt(localStorage.getItem('lastChargeTime')) : Date.now();
-    let chargeInterval;
-
-    function startCharging() {
-      clearInterval(chargeInterval);
-      chargeInterval = setInterval(() => {
-        const now = Date.now();
-        const elapsed = now - lastChargeTime;
-        let progress = Math.min((elapsed / CHARGE_TIME) * 100, 100);
-        energy = progress;
-        document.getElementById('energyText').innerText = Math.floor(progress);
-        document.getElementById('energyCircle').style.setProperty('--progress', progress + '%');
-
-        if (progress >= 100) {
-          clearInterval(chargeInterval);
-        }
-      }, 250);
-    }
-
-    // Сбор энергии
-    function collectEnergy(boost = false) {
-      if (energy < 100) return;
-
-      const baseMin = 150 + (30 * upgradePsi);
-      const baseMax = 250 + (50 * upgradePsi);
-      const baseReward = Math.floor(Math.random() * (baseMax - baseMin + 1)) + baseMin;
-      const adReward = Math.floor(baseReward * 3 + Math.random() * 200);
-      const reward = boost ? adReward : baseReward;
-
-      balance += reward;
-      localStorage.setItem('moonBalance', balance);
-      document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
-
-      energiesCollected += 1;
-      localStorage.setItem('energiesCollected', energiesCollected);
-
-      if (energiesCollected >= 5) {
-        moonLevel += 1;
-        energiesCollected = 0;
-        localStorage.setItem('moonLevel', moonLevel);
-        localStorage.setItem('energiesCollected', '0');
-        document.getElementById('level').innerText = `Уровень Луны: ${moonLevel} (0/5 энергий)`;
-        document.body.classList.add('level-up');
-        setTimeout(() => document.body.classList.remove('level-up'), 1500);
-        // Смена фазы (пример для уровней 5 и 10)
-        if (moonLevel === 5) document.body.className = 'level-five';
-        if (moonLevel === 10) document.body.className = 'level-ten';
+      // Сундук
+      const chestTimeLeft = gameState.nextChestTime - Date.now();
+      if (chestTimeLeft <= 0) {
+        elements.chestTimer.textContent = 'Сундук готов!';
+        elements.chestBtn.disabled = false;
+        elements.chestBtn.textContent = 'Открыть сундук';
       } else {
-        document.getElementById('level').innerText = `Уровень Луны: \( {moonLevel} ( \){energiesCollected}/5 энергий)`;
+        const h = Math.floor(chestTimeLeft / 3600000);
+        const m = Math.floor((chestTimeLeft % 3600000) / 60000);
+        const s = Math.floor((chestTimeLeft % 60000) / 1000);
+        elements.chestTimer.textContent = `Сундук через \( {h}: \){m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        elements.chestBtn.disabled = true;
+        elements.chestBtn.textContent = 'Ждите...';
       }
 
-      energy = 0;
-      lastChargeTime = Date.now();
-      localStorage.setItem('moonEnergy', energy);
-      localStorage.setItem('lastChargeTime', lastChargeTime);
-      document.getElementById('energyText').innerText = '0';
-      document.getElementById('energyCircle').style.setProperty('--progress', '0%');
-
-      // Анимация коинов
-      const coin = document.createElement('div');
-      coin.className = 'coin-fly';
-      coin.innerText = `+${reward}`;
-      coin.style.left = '50%';
-      coin.style.top = '50%';
-      document.body.appendChild(coin);
-      setTimeout(() => coin.remove(), 1500);
-
-      document.getElementById('status').innerText = `+${reward} коинов! ${boost ? 'Ускорено!' : 'Собрано!'}`;
-      setTimeout(() => { document.getElementById('status').innerText = ''; }, 4000);
-
-      startCharging();
+      // Апгрейды
+      elements.upgradeQuantum.textContent = `Квантовый Ускоритель (Lv ${gameState.upgradeQuantum})`;
+      elements.upgradePsi.textContent = `Пси-усилитель (Lv ${gameState.upgradePsi})`;
     }
 
-    // Ускорение через рекламу
-    function boostEnergy() {
-      resetDailyIfNeeded();
-      if (dailyBoosts >= DAILY_BOOST_LIMIT) {
-        document.getElementById('status').innerText = 'Лимит ускорений на сегодня исчерпан 🌙';
-        setTimeout(() => { document.getElementById('status').innerText = ''; }, 5000);
-        return;
+    setInterval(updateUI, 1000);
+    updateUI();
+
+    // Сбор
+    elements.collectBtn.onclick = () => {
+      const chargeTimeMs = getChargeTime() * 1000;
+      if (Date.now() - gameState.lastEnergyCollectTime < chargeTimeMs) return;
+
+      const reward = getBaseReward();
+      gameState.balance += reward;
+      gameState.energiesCollected += 1;
+
+      if (gameState.energiesCollected >= 5) {
+        gameState.moonLevel += 1;
+        gameState.energiesCollected = 0;
       }
+
+      gameState.lastEnergyCollectTime = Date.now();
+      saveGameState();
+      updateUI();
+
+      elements.status.textContent = `+${reward} коинов!`;
+      setTimeout(() => elements.status.textContent = '', 3000);
+    };
+
+    // Ускорить
+    elements.boostBtn.onclick = () => {
+      const adTimeLeft = gameState.lastAdWatchTime + 90*1000 - Date.now();
+      if (adTimeLeft > 0 || gameState.dailyAdCounter >= 40) return;
 
       if (typeof window.show_10555515 !== 'function') {
-        document.getElementById('status').innerText = 'Реклама недоступна';
+        elements.status.textContent = 'Реклама недоступна';
         return;
       }
 
-      document.getElementById('status').innerText = 'Загружаем рекламу...';
+      elements.status.textContent = 'Загружаем рекламу...';
 
       window.show_10555515()
         .then(() => {
-          dailyBoosts += 1;
-          localStorage.setItem('dailyBoosts', dailyBoosts);
-          collectEnergy(true);
-          updateBoostButton();
+          const reward = getAdReward();
+          gameState.balance += reward;
+          gameState.energiesCollected += 1;
+          if (gameState.energiesCollected >= 5) {
+            gameState.moonLevel += 1;
+            gameState.energiesCollected = 0;
+          }
+          gameState.lastAdWatchTime = Date.now();
+          gameState.dailyAdCounter += 1;
+          gameState.lastEnergyCollectTime = Date.now();
+          saveGameState();
+          updateUI();
+          elements.status.textContent = `+${reward} коинов! Ускорено!`;
         })
-        .catch((err) => {
-          document.getElementById('status').innerText = 'Реклама не удалась 😔';
-          console.error('Monetag error:', err);
+        .catch(err => {
+          elements.status.textContent = 'Ошибка рекламы 😔';
+          console.error(err);
         })
-        .finally(() => {
-          setTimeout(() => { document.getElementById('status').innerText = ''; }, 5000);
-        });
-    }
-
-    // Апгрейды
-    document.getElementById('upgradeQuantum').onclick = () => {
-      const cost = [0, 1200, 3000, 7500, 18000, 40000][upgradeQuantum + 1];
-      if (balance < cost) {
-        document.getElementById('status').innerText = 'Недостаточно коинов';
-        return;
-      }
-      balance -= cost;
-      upgradeQuantum += 1;
-      localStorage.setItem('moonBalance', balance);
-      localStorage.setItem('upgradeQuantum', upgradeQuantum);
-      document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
-      document.getElementById('upgradeQuantum').innerText = `Квантовый Ускоритель (Lv ${upgradeQuantum})`;
-      startCharging(); // Пересчитываем время
-    };
-
-    document.getElementById('upgradePsi').onclick = () => {
-      const cost = [0, 2000, 5000, 12000, 28000, 60000][upgradePsi + 1];
-      if (balance < cost) {
-        document.getElementById('status').innerText = 'Недостаточно коинов';
-        return;
-      }
-      balance -= cost;
-      upgradePsi += 1;
-      localStorage.setItem('moonBalance', balance);
-      localStorage.setItem('upgradePsi', upgradePsi);
-      document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
-      document.getElementById('upgradePsi').innerText = `Пси-усилитель сбора (Lv ${upgradePsi})`;
+        .finally(() => setTimeout(() => elements.status.textContent = '', 5000));
     };
 
     // Сундук
-    let nextChestTime = localStorage.getItem('nextChestTime') ? parseInt(localStorage.getItem('nextChestTime')) : Date.now() + 6*60*60*1000;
-    const chestSection = document.getElementById('chestSection');
-    const chestTimer = document.getElementById('chestTimer');
+    elements.chestBtn.onclick = () => {
+      if (Date.now() < gameState.nextChestTime) return;
 
-    function updateChest() {
-      const now = Date.now();
-      if (now >= nextChestTime) {
-        chestSection.style.display = 'block';
-        chestTimer.innerText = 'Сундук готов!';
-      } else {
-        chestSection.style.display = 'block';
-        const timeLeft = nextChestTime - now;
-        const hours = Math.floor(timeLeft / (60*60*1000));
-        const mins = Math.floor((timeLeft % (60*60*1000)) / (60*1000));
-        const secs = Math.floor((timeLeft % (60*1000)) / 1000);
-        chestTimer.innerText = `Сундук откроется через \( {hours}: \){mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-        setTimeout(updateChest, 1000);
-      }
-    }
-
-    document.getElementById('chestBtn').onclick = () => {
-      const now = Date.now();
-      if (now < nextChestTime) return;
-
-      const reward = Math.floor(Math.random() * (4000 - 2000 + 1)) + 2000 + (150 + 30*upgradePsi) * 10;
-      balance += reward;
-      localStorage.setItem('moonBalance', balance);
-      document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
-      document.getElementById('status').innerText = `+${reward} коинов из сундука! 🌙`;
-      nextChestTime = now + 6*60*60*1000;
-      localStorage.setItem('nextChestTime', nextChestTime);
-      updateChest();
-      setTimeout(() => { document.getElementById('status').innerText = ''; }, 4000);
+      const reward = getChestReward();
+      gameState.balance += reward;
+      gameState.nextChestTime = Date.now() + 6*60*60*1000;
+      saveGameState();
+      updateUI();
+      elements.status.textContent = `Сундук открыт! +${reward} коинов!`;
+      setTimeout(() => elements.status.textContent = '', 4000);
     };
 
-    // Инициализация
-    document.getElementById('collectBtn').onclick = () => collectEnergy(false);
-    document.getElementById('boostBtn').onclick = boostEnergy;
-    updateBoostButton();
-    startCharging();
-    updateChest();
-    document.getElementById('upgradeQuantum').innerText = `Квантовый Ускоритель (Lv ${upgradeQuantum})`;
-    document.getElementById('upgradePsi').innerText = `Пси-усилитель сбора (Lv ${upgradePsi})`;
+    // Апгрейды
+    elements.upgradeQuantum.onclick = () => {
+      const costs = [0, 1200, 3000, 7500, 18000, 40000];
+      const nextLevel = gameState.upgradeQuantum + 1;
+      if (nextLevel > 5 || gameState.balance < costs[nextLevel]) return;
+
+      gameState.balance -= costs[nextLevel];
+      gameState.upgradeQuantum = nextLevel;
+      saveGameState();
+      updateUI();
+      elements.status.textContent = 'Квантовый Ускоритель улучшен!';
+      setTimeout(() => elements.status.textContent = '', 3000);
+    };
+
+    elements.upgradePsi.onclick = () => {
+      const costs = [0, 2000, 5000, 12000, 28000, 60000];
+      const nextLevel = gameState.upgradePsi + 1;
+      if (nextLevel > 5 || gameState.balance < costs[nextLevel]) return;
+
+      gameState.balance -= costs[nextLevel];
+      gameState.upgradePsi = nextLevel;
+      saveGameState();
+      updateUI();
+      elements.status.textContent = 'Пси-усилитель улучшен!';
+      setTimeout(() => elements.status.textContent = '', 3000);
+    };
+
+    saveGameState(); // Первое сохранение
   </script>
 </body>
 </html>
