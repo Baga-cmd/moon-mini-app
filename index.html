@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Moon Coins</title>
+  <title>Moon Energy</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   
-  <!-- Monetag SDK (твой тег) -->
+  <!-- Monetag SDK -->
   <script src='//libtl.com/sdk.js' data-zone='10555515' data-sdk='show_10555515'></script>
 
   <style>
@@ -24,58 +24,112 @@
       justify-content: center;
     }
     .container {
-      background: rgba(10, 10, 30, 0.70);
+      background: rgba(10, 10, 30, 0.75);
       border-radius: 24px;
-      padding: 40px 24px;
-      max-width: 380px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px);
+      padding: 30px 20px;
+      max-width: 360px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
     }
     #balance {
-      font-size: 48px;
+      font-size: 36px;
       font-weight: bold;
       color: #ffd700;
-      margin: 0 0 40px 0;
-      text-shadow: 0 0 20px #ffd70080;
+      margin: 10px 0 20px;
+      text-shadow: 0 0 15px #ffd70080;
+    }
+    .energy-container {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 20px auto;
+    }
+    .energy-circle {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(#00ccff var(--progress, 0%), rgba(255,255,255,0.1) 0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(0,204,255,0.5);
+    }
+    .energy-inner {
+      width: 140px;
+      height: 140px;
+      background: rgba(0,0,30,0.8);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .energy-text {
+      font-size: 48px;
+      font-weight: bold;
+      color: #00ffcc;
+    }
+    .energy-label {
+      font-size: 16px;
+      opacity: 0.8;
     }
     button {
-      padding: 20px 50px;
-      font-size: 22px;
-      background: linear-gradient(135deg, #0066ff, #00ccff);
-      color: white;
+      padding: 14px 30px;
+      font-size: 18px;
+      margin: 10px auto;
       border: none;
-      border-radius: 60px;
+      border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 8px 30px rgba(0, 102, 255, 0.5);
+      width: 90%;
+      max-width: 280px;
       transition: all 0.3s;
-      width: 100%;
-      max-width: 320px;
     }
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 12px 40px rgba(0, 102, 255, 0.7);
+    #collectBtn {
+      background: linear-gradient(135deg, #00cc66, #00ff99);
+      color: white;
+      box-shadow: 0 6px 20px rgba(0,204,102,0.4);
     }
+    #boostBtn {
+      background: linear-gradient(135deg, #0066ff, #00aaff);
+      color: white;
+      box-shadow: 0 6px 20px rgba(0,102,255,0.5);
+    }
+    button:hover { transform: scale(1.05); }
     button.disabled {
-      background: gray;
+      background: gray !important;
       cursor: not-allowed;
       box-shadow: none;
+      transform: none;
     }
     #status {
-      font-size: 20px;
-      margin-top: 30px;
+      font-size: 18px;
+      margin-top: 20px;
       min-height: 50px;
       color: #00ffcc;
-      text-shadow: 0 0 10px #00ffcc80;
+    }
+    #level {
+      font-size: 20px;
+      margin: 10px 0;
+      color: #ffd700;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div id="balance">Баланс: 500 коинов ★</div>
+    <div id="level">Уровень Луны: 1 (0/5 энергий)</div>
     
-    <button id="adButton" onclick="watchAd()">
-      Смотреть рекламу → +300–600 коинов
-    </button>
+    <div class="energy-container">
+      <div class="energy-circle" id="energyCircle">
+        <div class="energy-inner">
+          <div class="energy-text" id="energyText">0</div>
+          <div class="energy-label">Энергия</div>
+        </div>
+      </div>
+    </div>
+
+    <button id="collectBtn">Собрать (+150–250)</button>
+    <button id="boostBtn">Ускорить через рекламу (+500–1000)</button>
 
     <div id="status"></div>
   </div>
@@ -84,112 +138,131 @@
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
 
-    // Баланс
-    let balance = localStorage.getItem('moonBalance') 
-      ? parseInt(localStorage.getItem('moonBalance')) 
-      : 500;
+    // Баланс и энергия
+    let balance = localStorage.getItem('moonBalance') ? parseInt(localStorage.getItem('moonBalance')) : 500;
+    let energy = localStorage.getItem('moonEnergy') ? parseFloat(localStorage.getItem('moonEnergy')) : 0;
+    let level = localStorage.getItem('moonLevel') ? parseInt(localStorage.getItem('moonLevel')) : 1;
+    let energiesCollected = localStorage.getItem('energiesCollected') ? parseInt(localStorage.getItem('energiesCollected')) : 0;
 
     document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
+    document.getElementById('level').innerText = `Уровень Луны: \( {level} ( \){energiesCollected}/5 энергий)`;
 
-    function updateBalance(newBalance) {
-      balance = newBalance; // Убрали Math.max, чтобы баланс мог падать ниже 100 при тратах позже
-      document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
-      localStorage.setItem('moonBalance', balance);
-    }
-
-    // Кулдаун и суточный лимит
-    const COOLDOWN_TIME = 90 * 1000;          // 90 секунд
-    const DAILY_LIMIT = 40;                   // максимум 40 просмотров в сутки
-    let lastAdTime = localStorage.getItem('lastAdTime') ? parseInt(localStorage.getItem('lastAdTime')) : 0;
-    let dailyViews = localStorage.getItem('dailyViews') ? parseInt(localStorage.getItem('dailyViews')) : 0;
+    // Суточный лимит только на ускорение
+    const DAILY_BOOST_LIMIT = 40;
+    let dailyBoosts = localStorage.getItem('dailyBoosts') ? parseInt(localStorage.getItem('dailyBoosts')) : 0;
     let dailyDate = localStorage.getItem('dailyDate') || new Date().toDateString();
-
-    const adButton = document.getElementById('adButton');
 
     function resetDailyIfNeeded() {
       const today = new Date().toDateString();
       if (today !== dailyDate) {
-        dailyViews = 0;
+        dailyBoosts = 0;
         dailyDate = today;
-        localStorage.setItem('dailyViews', '0');
+        localStorage.setItem('dailyBoosts', '0');
         localStorage.setItem('dailyDate', dailyDate);
       }
     }
 
-    function updateButtonState() {
-      resetDailyIfNeeded();
-      const now = Date.now();
-      const timeLeft = lastAdTime + COOLDOWN_TIME - now;
+    // Зарядка энергии (25 сек = 100%)
+    const CHARGE_TIME = 25000;
+    let lastChargeTime = localStorage.getItem('lastChargeTime') ? parseInt(localStorage.getItem('lastChargeTime')) : Date.now();
+    let chargeInterval;
 
-      if (dailyViews >= DAILY_LIMIT) {
-        adButton.classList.add('disabled');
-        adButton.disabled = true;
-        adButton.innerText = 'На сегодня хватит рекламы 🌙 Приходи завтра!';
-        return;
-      }
+    function startCharging() {
+      clearInterval(chargeInterval);
+      chargeInterval = setInterval(() => {
+        const now = Date.now();
+        const elapsed = now - lastChargeTime;
+        let progress = Math.min((elapsed / CHARGE_TIME) * 100, 100);
+        energy = progress;
+        document.getElementById('energyText').innerText = Math.floor(progress);
+        document.getElementById('energyCircle').style.setProperty('--progress', progress + '%');
 
-      if (timeLeft > 0) {
-        adButton.classList.add('disabled');
-        adButton.disabled = true;
-        adButton.innerText = `Перезарядка луны: ${Math.ceil(timeLeft / 1000)} сек`;
-        setTimeout(updateButtonState, 1000);
-      } else {
-        adButton.classList.remove('disabled');
-        adButton.disabled = false;
-        adButton.innerText = 'Смотреть рекламу → +300–600 коинов';
-      }
+        if (progress >= 100) {
+          clearInterval(chargeInterval);
+        }
+      }, 250);
     }
 
-    // Реклама
-    function watchAd() {
-      resetDailyIfNeeded();
+    // Сохранение энергии
+    function saveEnergy() {
+      localStorage.setItem('moonEnergy', energy);
+      localStorage.setItem('lastChargeTime', Date.now());
+    }
 
-      if (dailyViews >= DAILY_LIMIT) {
-        document.getElementById('status').innerText = 'На сегодня лимит просмотров достигнут 🌙';
+    // Сбор энергии
+    function collectEnergy(boost = false) {
+      if (energy < 100) return;
+
+      const baseReward = Math.floor(Math.random() * (250 - 150 + 1)) + 150;
+      const boostReward = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
+      const reward = boost ? boostReward : baseReward;
+
+      balance += reward;
+      localStorage.setItem('moonBalance', balance);
+      document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
+
+      // Счётчик энергий для уровня
+      energiesCollected += 1;
+      localStorage.setItem('energiesCollected', energiesCollected);
+
+      if (energiesCollected >= 5) {
+        level += 1;
+        energiesCollected = 0;
+        localStorage.setItem('moonLevel', level);
+        localStorage.setItem('energiesCollected', '0');
+        document.getElementById('level').innerText = `Уровень Луны: ${level} (0/5 энергий)`;
+      } else {
+        document.getElementById('level').innerText = `Уровень Луны: \( {level} ( \){energiesCollected}/5 энергий)`;
+      }
+
+      // Сброс энергии
+      energy = 0;
+      lastChargeTime = Date.now();
+      saveEnergy();
+      document.getElementById('energyText').innerText = '0';
+      document.getElementById('energyCircle').style.setProperty('--progress', '0%');
+
+      document.getElementById('status').innerText = `+${reward} коинов! ${boost ? 'Ускорено!' : 'Собрано!'}`;
+      setTimeout(() => { document.getElementById('status').innerText = ''; }, 4000);
+
+      startCharging(); // Запускаем заново
+    }
+
+    // Ускорение через рекламу
+    function boostEnergy() {
+      resetDailyIfNeeded();
+      if (dailyBoosts >= DAILY_BOOST_LIMIT) {
+        document.getElementById('status').innerText = 'Лимит ускорений на сегодня исчерпан 🌙';
         setTimeout(() => { document.getElementById('status').innerText = ''; }, 5000);
         return;
       }
 
-      const now = Date.now();
-      if (now - lastAdTime < COOLDOWN_TIME) return;
-
-      document.getElementById('status').innerText = 'Загружаем рекламу...';
-
       if (typeof window.show_10555515 !== 'function') {
-        document.getElementById('status').innerText = 'SDK не загрузился. Попробуй позже.';
-        console.error('Monetag SDK function show_10555515 not found');
+        document.getElementById('status').innerText = 'Реклама недоступна';
         return;
       }
 
-      console.log('Запускаем Monetag Rewarded Interstitial...');
+      document.getElementById('status').innerText = 'Загружаем рекламу...';
 
       window.show_10555515()
         .then(() => {
-          const reward = Math.floor(Math.random() * (600 - 300 + 1)) + 300;
-          updateBalance(balance + reward);
-          document.getElementById('status').innerText = `+${reward} коинов! Успешный просмотр! 🌟`;
-
-          // Обновляем счётчики
-          lastAdTime = Date.now();
-          dailyViews += 1;
-          localStorage.setItem('lastAdTime', lastAdTime);
-          localStorage.setItem('dailyViews', dailyViews);
-
-          updateButtonState();
+          dailyBoosts += 1;
+          localStorage.setItem('dailyBoosts', dailyBoosts);
+          collectEnergy(true); // Ускоренный сбор
         })
         .catch((err) => {
-          document.getElementById('status').innerText = 'Реклама не досмотрена или ошибка 😔';
-          console.error('Monetag Rejected / Error:', err);
+          document.getElementById('status').innerText = 'Реклама не удалась 😔';
+          console.error('Monetag error:', err);
         })
         .finally(() => {
-          setTimeout(() => {
-            document.getElementById('status').innerText = '';
-          }, 5000);
+          setTimeout(() => { document.getElementById('status').innerText = ''; }, 5000);
         });
     }
 
     // Инициализация
-    updateButtonState();
+    document.getElementById('collectBtn').onclick = () => collectEnergy(false);
+    document.getElementById('boostBtn').onclick = boostEnergy;
+    startCharging();
   </script>
 </body>
 </html>
