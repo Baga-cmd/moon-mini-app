@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Moon Energy</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Monetag SDK -->
   <script src='//libtl.com/sdk.js' data-zone='10555515' data-sdk='show_10555515'></script>
 
   <style>
@@ -100,8 +102,8 @@
 
     <div id="upgrades">
       <h3>Улучшения</h3>
-      <button id="upgradeQuantum">Квантовый Ускоритель (Lv 0)</button>
-      <button id="upgradePsi">Пси-усилитель (Lv 0)</button>
+      <button id="upgradeQuantum">Квантовый Ускоритель (Lv 0, 1200 коинов)</button>
+      <button id="upgradePsi">Пси-усилитель (Lv 0, 2000 коинов)</button>
     </div>
 
     <div id="status"></div>
@@ -153,14 +155,28 @@
       return getBaseReward() * 10 + Math.floor(Math.random() * 2001) + 2000;
     }
 
-    // Обновление UI
+    // UI элементы
+    const elements = {
+      balance: document.getElementById('balance'),
+      level: document.getElementById('level'),
+      energyText: document.getElementById('energyText'),
+      energyCircle: document.getElementById('energyCircle'),
+      collectBtn: document.getElementById('collectBtn'),
+      boostBtn: document.getElementById('boostBtn'),
+      chestTimer: document.getElementById('chestTimer'),
+      chestBtn: document.getElementById('chestBtn'),
+      upgradeQuantum: document.getElementById('upgradeQuantum'),
+      upgradePsi: document.getElementById('upgradePsi')
+    };
+
+    // Обновление UI каждую секунду
     function updateUI() {
+      elements.balance.textContent = `Баланс: ${gameState.balance} коинов ★`;
+      elements.level.textContent = `Уровень Луны: \( {gameState.moonLevel} ( \){gameState.energiesCollected}/5 энергий)`;
+
       const chargeTimeMs = getChargeTime() * 1000;
       const elapsed = Date.now() - gameState.lastEnergyCollectTime;
       const progress = Math.min(100, (elapsed / chargeTimeMs) * 100);
-
-      elements.balance.textContent = `Баланс: ${gameState.balance} коинов ★`;
-      elements.level.textContent = `Уровень Луны: \( {gameState.moonLevel} ( \){gameState.energiesCollected}/5 энергий)`;
       elements.energyText.textContent = progress >= 100 ? 'Готово!' : Math.floor(progress);
       elements.energyCircle.style.setProperty('--progress', progress + '%');
 
@@ -185,12 +201,112 @@
         elements.chestBtn.textContent = 'Ждите...';
       }
 
-      elements.upgradeQuantum.textContent = `Квантовый Ускоритель (Lv ${gameState.upgradeQuantum})`;
-      elements.upgradePsi.textContent = `Пси-усилитель (Lv ${gameState.upgradePsi})`;
+      elements.upgradeQuantum.textContent = `Квантовый Ускоритель (Lv ${gameState.upgradeQuantum}, 1200 коинов)`;
+      elements.upgradePsi.textContent = `Пси-усилитель (Lv ${gameState.upgradePsi}, 2000 коинов)`;
     };
 
     setInterval(updateUI, 1000);
     updateUI();
+
+    // Сбор энергии
+    elements.collectBtn.onclick = () => {
+      const chargeTimeMs = getChargeTime() * 1000;
+      if (Date.now() - gameState.lastEnergyCollectTime < chargeTimeMs) return;
+
+      const reward = getBaseReward();
+      gameState.balance += reward;
+      gameState.energiesCollected += 1;
+
+      if (gameState.energiesCollected >= 5) {
+        gameState.moonLevel += 1;
+        gameState.energiesCollected = 0;
+      }
+
+      gameState.lastEnergyCollectTime = Date.now();
+      saveGameState();
+      updateUI();
+
+      elements.status.textContent = `+${reward} коинов!`;
+      setTimeout(() => elements.status.textContent = '', 3000);
+    };
+
+    // Ускорить
+    elements.boostBtn.onclick = () => {
+      const adTimeLeft = gameState.lastAdWatchTime + 90*1000 - Date.now();
+      if (adTimeLeft > 0 || gameState.dailyAdCounter >= 40) return;
+
+      if (typeof window.show_10555515 !== 'function') {
+        elements.status.textContent = 'Реклама недоступна';
+        return;
+      }
+
+      elements.status.textContent = 'Загружаем рекламу...';
+
+      window.show_10555515()
+        .then(() => {
+          const reward = getAdReward();
+          gameState.balance += reward;
+          gameState.energiesCollected += 1;
+          if (gameState.energiesCollected >= 5) {
+            gameState.moonLevel += 1;
+            gameState.energiesCollected = 0;
+          }
+          gameState.lastAdWatchTime = Date.now();
+          gameState.dailyAdCounter += 1;
+          gameState.lastEnergyCollectTime = Date.now();
+          saveGameState();
+          updateUI();
+          elements.status.textContent = `+${reward} коинов! Ускорено!`;
+        })
+        .catch(err => {
+          elements.status.textContent = 'Ошибка рекламы 😔';
+          console.error(err);
+        })
+        .finally(() => setTimeout(() => elements.status.textContent = '', 5000));
+    };
+
+    // Сундук
+    elements.chestBtn.onclick = () => {
+      const chestTimeLeft = gameState.nextChestTime - Date.now();
+      if (chestTimeLeft > 0) return;
+
+      const reward = getChestReward();
+      gameState.balance += reward;
+      gameState.nextChestTime = Date.now() + 6*3600000;
+      saveGameState();
+      updateUI();
+      elements.status.textContent = `+${reward} коинов из сундука!`;
+      setTimeout(() => elements.status.textContent = '', 4000);
+    };
+
+    // Апгрейды
+    elements.upgradeQuantum.onclick = () => {
+      const costs = [0, 1200, 3000, 7500, 18000, 40000];
+      const nextLevel = gameState.upgradeQuantum + 1;
+      if (nextLevel > 5 || gameState.balance < costs[nextLevel]) return;
+
+      gameState.balance -= costs[nextLevel];
+      gameState.upgradeQuantum = nextLevel;
+      saveGameState();
+      updateUI();
+      elements.status.textContent = 'Ускоритель улучшен!';
+      setTimeout(() => elements.status.textContent = '', 3000);
+    };
+
+    elements.upgradePsi.onclick = () => {
+      const costs = [0, 2000, 5000, 12000, 28000, 60000];
+      const nextLevel = gameState.upgradePsi + 1;
+      if (nextLevel > 5 || gameState.balance < costs[nextLevel]) return;
+
+      gameState.balance -= costs[nextLevel];
+      gameState.upgradePsi = nextLevel;
+      saveGameState();
+      updateUI();
+      elements.status.textContent = 'Усилитель улучшен!';
+      setTimeout(() => elements.status.textContent = '', 3000);
+    };
+
+    saveGameState(); // Сохранение при загрузке
   </script>
 </body>
 </html>
