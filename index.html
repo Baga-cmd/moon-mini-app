@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Moon Energy</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  
-  <!-- Monetag SDK -->
   <script src='//libtl.com/sdk.js' data-zone='10555515' data-sdk='show_10555515'></script>
 
   <style>
@@ -102,8 +100,8 @@
 
     <div id="upgrades">
       <h3>Улучшения</h3>
-      <button id="upgradeQuantum">Квантовый Ускоритель (Lv 0, 1200 коинов)</button>
-      <button id="upgradePsi">Пси-усилитель (Lv 0, 2000 коинов)</button>
+      <button id="upgradeQuantum"></button>
+      <button id="upgradePsi"></button>
     </div>
 
     <div id="status"></div>
@@ -166,7 +164,8 @@
       chestTimer: document.getElementById('chestTimer'),
       chestBtn: document.getElementById('chestBtn'),
       upgradeQuantum: document.getElementById('upgradeQuantum'),
-      upgradePsi: document.getElementById('upgradePsi')
+      upgradePsi: document.getElementById('upgradePsi'),
+      status: document.getElementById('status')
     };
 
     // Обновление UI каждую секунду
@@ -201,8 +200,8 @@
         elements.chestBtn.textContent = 'Ждите...';
       }
 
-      elements.upgradeQuantum.textContent = `Квантовый Ускоритель (Lv ${gameState.upgradeQuantum}, 1200 коинов)`;
-      elements.upgradePsi.textContent = `Пси-усилитель (Lv ${gameState.upgradePsi}, 2000 коинов)`;
+      elements.upgradeQuantum.textContent = `Квантовый Ускоритель (Lv ${gameState.upgradeQuantum}, ${[0,1200,3000,7500,18000,40000][gameState.upgradeQuantum + 1]} коинов)`;
+      elements.upgradePsi.textContent = `Пси-усилитель (Lv ${gameState.upgradePsi}, ${[0,2000,5000,12000,28000,60000][gameState.upgradePsi + 1]} коинов)`;
     };
 
     setInterval(updateUI, 1000);
@@ -228,6 +227,15 @@
 
       elements.status.textContent = `+${reward} коинов!`;
       setTimeout(() => elements.status.textContent = '', 3000);
+
+      // Анимация коинов
+      const coin = document.createElement('div');
+      coin.className = 'coin-fly';
+      coin.innerText = `+${reward}`;
+      coin.style.left = '50%';
+      coin.style.top = '50%';
+      document.body.appendChild(coin);
+      setTimeout(() => coin.remove(), 1500);
     };
 
     // Ускорить
@@ -283,7 +291,10 @@
     elements.upgradeQuantum.onclick = () => {
       const costs = [0, 1200, 3000, 7500, 18000, 40000];
       const nextLevel = gameState.upgradeQuantum + 1;
-      if (nextLevel > 5 || gameState.balance < costs[nextLevel]) return;
+      if (nextLevel > 5 || gameState.balance < costs[nextLevel]) {
+        elements.status.textContent = 'Недостаточно коинов';
+        return;
+      }
 
       gameState.balance -= costs[nextLevel];
       gameState.upgradeQuantum = nextLevel;
@@ -296,7 +307,10 @@
     elements.upgradePsi.onclick = () => {
       const costs = [0, 2000, 5000, 12000, 28000, 60000];
       const nextLevel = gameState.upgradePsi + 1;
-      if (nextLevel > 5 || gameState.balance < costs[nextLevel]) return;
+      if (nextLevel > 5 || gameState.balance < costs[nextLevel]) {
+        elements.status.textContent = 'Недостаточно коинов';
+        return;
+      }
 
       gameState.balance -= costs[nextLevel];
       gameState.upgradePsi = nextLevel;
