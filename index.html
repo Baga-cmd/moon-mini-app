@@ -53,6 +53,7 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 0 30px rgba(0,204,255,0.5);
+      transition: background 1s ease;
     }
     .energy-inner {
       width: 140px;
@@ -89,7 +90,7 @@
       color: white;
       box-shadow: 0 6px 20px rgba(0,204,102,0.4);
     }
-    #boostBtn {
+    #boostBtn, #chestBtn, #upgradeBtn {
       background: linear-gradient(135deg, #0066ff, #00aaff);
       color: white;
       box-shadow: 0 6px 20px rgba(0,102,255,0.5);
@@ -112,9 +113,34 @@
       margin: 10px 0;
       color: #ffd700;
     }
+    #upgrades {
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+    }
+    .coin-fly {
+      position: absolute;
+      font-size: 24px;
+      color: #ffd700;
+      pointer-events: none;
+      animation: fly 1.5s ease-out forwards;
+    }
+    @keyframes fly {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-150px); opacity: 0; }
+    }
+    @keyframes levelUpPulse {
+      0% { transform: scale(1); filter: drop-shadow(0 0 10px gold); }
+      50% { transform: scale(1.25); filter: drop-shadow(0 0 30px gold); }
+      100% { transform: scale(1); filter: drop-shadow(0 0 10px gold); }
+    }
+    .level-up { animation: levelUpPulse 1.5s ease; }
+    body.level-five { background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80') no-repeat center center fixed; background-size: cover; }
+    body.level-ten { background: url('https://images.unsplash.com/photo-1447433589675-4aaa569f3e05?auto=format&fit=crop&q=80') no-repeat center center fixed; background-size: cover; }
   </style>
 </head>
-<body>
+<body class="level-basic">
   <div class="container">
     <div id="balance">Баланс: 500 коинов ★</div>
     <div id="level">Уровень Луны: 1 (0/5 энергий)</div>
@@ -131,6 +157,17 @@
     <button id="collectBtn">Собрать (+150–250)</button>
     <button id="boostBtn">Ускорить через рекламу (+500–1000)</button>
 
+    <div id="chestSection" style="margin: 20px 0; display: none;">
+      <div id="chestTimer"></div>
+      <button id="chestBtn">Открыть сундук</button>
+    </div>
+
+    <div id="upgrades">
+      <h3>Улучшения базы</h3>
+      <button id="upgradeQuantum">Квантовый Ускоритель (Lv 0)</button>
+      <button id="upgradePsi">Пси-усилитель сбора (Lv 0)</button>
+    </div>
+
     <div id="status"></div>
   </div>
 
@@ -138,19 +175,24 @@
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
 
-    // Баланс и энергия
+    // Баланс и прогресс
     let balance = localStorage.getItem('moonBalance') ? parseInt(localStorage.getItem('moonBalance')) : 500;
-    let energy = localStorage.getItem('moonEnergy') ? parseFloat(localStorage.getItem('moonEnergy')) : 0;
-    let level = localStorage.getItem('moonLevel') ? parseInt(localStorage.getItem('moonLevel')) : 1;
+    let moonLevel = localStorage.getItem('moonLevel') ? parseInt(localStorage.getItem('moonLevel')) : 1;
     let energiesCollected = localStorage.getItem('energiesCollected') ? parseInt(localStorage.getItem('energiesCollected')) : 0;
+    let upgradeQuantum = localStorage.getItem('upgradeQuantum') ? parseInt(localStorage.getItem('upgradeQuantum')) : 0;
+    let upgradePsi = localStorage.getItem('upgradePsi') ? parseInt(localStorage.getItem('upgradePsi')) : 0;
 
     document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
-    document.getElementById('level').innerText = `Уровень Луны: \( {level} ( \){energiesCollected}/5 энергий)`;
+    document.getElementById('level').innerText = `Уровень Луны: \( {moonLevel} ( \){energiesCollected}/5 энергий)`;
 
-    // Суточный лимит только на ускорение
+    // Кулдаун и лимит
+    const COOLDOWN_TIME = 90 * 1000;
     const DAILY_BOOST_LIMIT = 40;
+    let lastAdTime = localStorage.getItem('lastAdTime') ? parseInt(localStorage.getItem('lastAdTime')) : 0;
     let dailyBoosts = localStorage.getItem('dailyBoosts') ? parseInt(localStorage.getItem('dailyBoosts')) : 0;
     let dailyDate = localStorage.getItem('dailyDate') || new Date().toDateString();
+
+    const boostBtn = document.getElementById('boostBtn');
 
     function resetDailyIfNeeded() {
       const today = new Date().toDateString();
@@ -162,8 +204,33 @@
       }
     }
 
-    // Зарядка энергии (25 сек = 100%)
-    const CHARGE_TIME = 25000;
+    function updateBoostButton() {
+      resetDailyIfNeeded();
+      const now = Date.now();
+      const timeLeft = lastAdTime + COOLDOWN_TIME - now;
+
+      if (dailyBoosts >= DAILY_BOOST_LIMIT) {
+        boostBtn.classList.add('disabled');
+        boostBtn.disabled = true;
+        boostBtn.innerText = 'Лимит ускорений исчерпан 🌙';
+        return;
+      }
+
+      if (timeLeft > 0) {
+        boostBtn.classList.add('disabled');
+        boostBtn.disabled = true;
+        boostBtn.innerText = `Доступно через ${Math.ceil(timeLeft / 1000)} сек`;
+        setTimeout(updateBoostButton, 1000);
+      } else {
+        boostBtn.classList.remove('disabled');
+        boostBtn.disabled = false;
+        boostBtn.innerText = 'Ускорить через рекламу (+500–1000)';
+      }
+    }
+
+    // Зарядка энергии
+    let energy = localStorage.getItem('moonEnergy') ? parseFloat(localStorage.getItem('moonEnergy')) : 0;
+    const CHARGE_TIME = 25000 * Math.pow(0.9, upgradeQuantum);
     let lastChargeTime = localStorage.getItem('lastChargeTime') ? parseInt(localStorage.getItem('lastChargeTime')) : Date.now();
     let chargeInterval;
 
@@ -183,49 +250,58 @@
       }, 250);
     }
 
-    // Сохранение энергии
-    function saveEnergy() {
-      localStorage.setItem('moonEnergy', energy);
-      localStorage.setItem('lastChargeTime', Date.now());
-    }
-
     // Сбор энергии
     function collectEnergy(boost = false) {
       if (energy < 100) return;
 
-      const baseReward = Math.floor(Math.random() * (250 - 150 + 1)) + 150;
-      const boostReward = Math.floor(Math.random() * (1000 - 500 + 1)) + 500;
-      const reward = boost ? boostReward : baseReward;
+      const baseMin = 150 + (30 * upgradePsi);
+      const baseMax = 250 + (50 * upgradePsi);
+      const baseReward = Math.floor(Math.random() * (baseMax - baseMin + 1)) + baseMin;
+      const adReward = Math.floor(baseReward * 3 + Math.random() * 200);
+      const reward = boost ? adReward : baseReward;
 
       balance += reward;
       localStorage.setItem('moonBalance', balance);
       document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
 
-      // Счётчик энергий для уровня
       energiesCollected += 1;
       localStorage.setItem('energiesCollected', energiesCollected);
 
       if (energiesCollected >= 5) {
-        level += 1;
+        moonLevel += 1;
         energiesCollected = 0;
-        localStorage.setItem('moonLevel', level);
+        localStorage.setItem('moonLevel', moonLevel);
         localStorage.setItem('energiesCollected', '0');
-        document.getElementById('level').innerText = `Уровень Луны: ${level} (0/5 энергий)`;
+        document.getElementById('level').innerText = `Уровень Луны: ${moonLevel} (0/5 энергий)`;
+        document.body.classList.add('level-up');
+        setTimeout(() => document.body.classList.remove('level-up'), 1500);
+        // Смена фазы (пример для уровней 5 и 10)
+        if (moonLevel === 5) document.body.className = 'level-five';
+        if (moonLevel === 10) document.body.className = 'level-ten';
       } else {
-        document.getElementById('level').innerText = `Уровень Луны: \( {level} ( \){energiesCollected}/5 энергий)`;
+        document.getElementById('level').innerText = `Уровень Луны: \( {moonLevel} ( \){energiesCollected}/5 энергий)`;
       }
 
-      // Сброс энергии
       energy = 0;
       lastChargeTime = Date.now();
-      saveEnergy();
+      localStorage.setItem('moonEnergy', energy);
+      localStorage.setItem('lastChargeTime', lastChargeTime);
       document.getElementById('energyText').innerText = '0';
       document.getElementById('energyCircle').style.setProperty('--progress', '0%');
+
+      // Анимация коинов
+      const coin = document.createElement('div');
+      coin.className = 'coin-fly';
+      coin.innerText = `+${reward}`;
+      coin.style.left = '50%';
+      coin.style.top = '50%';
+      document.body.appendChild(coin);
+      setTimeout(() => coin.remove(), 1500);
 
       document.getElementById('status').innerText = `+${reward} коинов! ${boost ? 'Ускорено!' : 'Собрано!'}`;
       setTimeout(() => { document.getElementById('status').innerText = ''; }, 4000);
 
-      startCharging(); // Запускаем заново
+      startCharging();
     }
 
     // Ускорение через рекламу
@@ -248,7 +324,8 @@
         .then(() => {
           dailyBoosts += 1;
           localStorage.setItem('dailyBoosts', dailyBoosts);
-          collectEnergy(true); // Ускоренный сбор
+          collectEnergy(true);
+          updateBoostButton();
         })
         .catch((err) => {
           document.getElementById('status').innerText = 'Реклама не удалась 😔';
@@ -259,10 +336,80 @@
         });
     }
 
+    // Апгрейды
+    document.getElementById('upgradeQuantum').onclick = () => {
+      const cost = [0, 1200, 3000, 7500, 18000, 40000][upgradeQuantum + 1];
+      if (balance < cost) {
+        document.getElementById('status').innerText = 'Недостаточно коинов';
+        return;
+      }
+      balance -= cost;
+      upgradeQuantum += 1;
+      localStorage.setItem('moonBalance', balance);
+      localStorage.setItem('upgradeQuantum', upgradeQuantum);
+      document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
+      document.getElementById('upgradeQuantum').innerText = `Квантовый Ускоритель (Lv ${upgradeQuantum})`;
+      startCharging(); // Пересчитываем время
+    };
+
+    document.getElementById('upgradePsi').onclick = () => {
+      const cost = [0, 2000, 5000, 12000, 28000, 60000][upgradePsi + 1];
+      if (balance < cost) {
+        document.getElementById('status').innerText = 'Недостаточно коинов';
+        return;
+      }
+      balance -= cost;
+      upgradePsi += 1;
+      localStorage.setItem('moonBalance', balance);
+      localStorage.setItem('upgradePsi', upgradePsi);
+      document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
+      document.getElementById('upgradePsi').innerText = `Пси-усилитель сбора (Lv ${upgradePsi})`;
+    };
+
+    // Сундук
+    let nextChestTime = localStorage.getItem('nextChestTime') ? parseInt(localStorage.getItem('nextChestTime')) : Date.now() + 6*60*60*1000;
+    const chestSection = document.getElementById('chestSection');
+    const chestTimer = document.getElementById('chestTimer');
+
+    function updateChest() {
+      const now = Date.now();
+      if (now >= nextChestTime) {
+        chestSection.style.display = 'block';
+        chestTimer.innerText = 'Сундук готов!';
+      } else {
+        chestSection.style.display = 'block';
+        const timeLeft = nextChestTime - now;
+        const hours = Math.floor(timeLeft / (60*60*1000));
+        const mins = Math.floor((timeLeft % (60*60*1000)) / (60*1000));
+        const secs = Math.floor((timeLeft % (60*1000)) / 1000);
+        chestTimer.innerText = `Сундук откроется через \( {hours}: \){mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        setTimeout(updateChest, 1000);
+      }
+    }
+
+    document.getElementById('chestBtn').onclick = () => {
+      const now = Date.now();
+      if (now < nextChestTime) return;
+
+      const reward = Math.floor(Math.random() * (4000 - 2000 + 1)) + 2000 + (150 + 30*upgradePsi) * 10;
+      balance += reward;
+      localStorage.setItem('moonBalance', balance);
+      document.getElementById('balance').innerText = `Баланс: ${balance} коинов ★`;
+      document.getElementById('status').innerText = `+${reward} коинов из сундука! 🌙`;
+      nextChestTime = now + 6*60*60*1000;
+      localStorage.setItem('nextChestTime', nextChestTime);
+      updateChest();
+      setTimeout(() => { document.getElementById('status').innerText = ''; }, 4000);
+    };
+
     // Инициализация
     document.getElementById('collectBtn').onclick = () => collectEnergy(false);
     document.getElementById('boostBtn').onclick = boostEnergy;
+    updateBoostButton();
     startCharging();
+    updateChest();
+    document.getElementById('upgradeQuantum').innerText = `Квантовый Ускоритель (Lv ${upgradeQuantum})`;
+    document.getElementById('upgradePsi').innerText = `Пси-усилитель сбора (Lv ${upgradePsi})`;
   </script>
 </body>
 </html>
