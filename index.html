@@ -6,6 +6,7 @@
   <title>Moon Energy</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src='//libtl.com/sdk.js' data-zone='10555515' data-sdk='show_10555515'></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
 
   <style>
     :root {
@@ -43,7 +44,7 @@
       padding: 20px 0;
     }
 
-    #starfield {
+    #starfield, #meteorShower, #energyParticles {
       position: fixed;
       top: 0;
       left: 0;
@@ -51,6 +52,16 @@
       height: 100%;
       pointer-events: none;
       z-index: -2;
+    }
+
+    #particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -3;
+      pointer-events: none;
     }
 
     .star {
@@ -171,6 +182,7 @@
       position: relative;
     }
 
+    /* ===== АНИМИРОВАННАЯ ЛУНА ===== */
     #moonPhase {
       position: absolute;
       width: 100px;
@@ -182,8 +194,31 @@
       z-index: 2;
       pointer-events: none;
       transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: moonBreathing 5s ease-in-out infinite alternate;
     }
 
+    @keyframes moonBreathing {
+      0% { 
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+      }
+      100% { 
+        transform: translate(-50%, -50%) scale(1.05);
+        filter: brightness(1.2);
+      }
+    }
+
+    .energy-circle.ready #moonPhase {
+      animation: moonPulse 2s infinite;
+      filter: brightness(1.5) drop-shadow(0 0 30px gold);
+    }
+
+    @keyframes moonPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    /* Фазы Луны через clip-path */
     .moon-phase-1 {
       background: radial-gradient(circle at 70% 50%, rgba(249, 240, 210, 0.9) 0%, rgba(230, 212, 163, 0.8) 30%, transparent 35%);
       clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 50%, 15% 25%, 15% 75%, 0% 50%);
@@ -242,6 +277,7 @@
       100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
     }
 
+    /* ===== КНОПКИ ===== */
     button {
       padding: 18px 35px;
       font-size: 20px;
@@ -324,6 +360,7 @@
       transform: none !important;
     }
 
+    /* ===== СУНДУК ===== */
     #chestSection {
       margin: 25px 0;
       padding: 20px;
@@ -373,6 +410,7 @@
       50% { transform: scale(1.05); }
     }
 
+    /* ===== УЛУЧШЕНИЯ ===== */
     #upgrades {
       margin: 30px 0 20px;
       padding: 25px;
@@ -414,6 +452,7 @@
       background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
     }
 
+    /* ===== АНИМИРОВАННЫЕ КАРТОЧКИ УЛУЧШЕНИЙ ===== */
     .upgrade-card {
       background: linear-gradient(145deg, rgba(21, 21, 43, 0.8), rgba(10, 10, 26, 0.9));
       border-radius: 20px;
@@ -485,6 +524,34 @@
       font-size: 32px;
       flex-shrink: 0;
       transition: all 0.3s ease;
+      animation: iconFloat 6s ease-in-out infinite;
+    }
+
+    #upgradeQuantumCard .upgrade-icon {
+      animation: quantumPulse 3s infinite;
+    }
+
+    #upgradePsiCard .upgrade-icon {
+      animation: spinSlow 8s linear infinite;
+    }
+
+    @keyframes iconFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    @keyframes quantumPulse {
+      0%, 100% { 
+        filter: brightness(1) drop-shadow(0 0 10px #00ccff);
+      }
+      50% { 
+        filter: brightness(1.5) drop-shadow(0 0 20px #00ccff);
+      }
+    }
+
+    @keyframes spinSlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     .upgrade-info {
@@ -516,7 +583,7 @@
 
     .progress-bar {
       height: 100%;
-      background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue);
+      background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
       border-radius: 3px;
       width: 0%;
       transition: width 0.5s ease;
@@ -529,6 +596,7 @@
       margin-top: 10px;
     }
 
+    /* ===== СТАТУС-СООБЩЕНИЯ ===== */
     .status-message {
       margin: 20px 0;
       padding: 18px;
@@ -556,6 +624,76 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
+    /* ===== МЕТЕОРИТНЫЙ ДОЖДЬ ===== */
+    .meteor {
+      position: fixed;
+      width: 2px;
+      height: 2px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.8), 
+        transparent);
+      border-radius: 50%;
+      z-index: -1;
+      pointer-events: none;
+      filter: blur(0.5px);
+    }
+
+    .meteor::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 0;
+      width: 100px;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(100, 200, 255, 0.6), 
+        transparent);
+      transform-origin: right center;
+    }
+
+    /* ===== ЧАСТИЦЫ ЭНЕРГИИ ВОКРУГ ШКАЛЫ ===== */
+    .energy-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 5;
+      background: radial-gradient(circle, 
+        var(--neon-blue) 0%, 
+        rgba(0, 204, 255, 0.3) 70%,
+        transparent 100%);
+      box-shadow: 0 0 10px var(--neon-blue);
+    }
+
+    .energy-particle.fast {
+      animation: particleOrbit 2s linear infinite;
+      box-shadow: 0 0 15px var(--neon-blue), 
+                  0 0 25px var(--neon-blue);
+    }
+
+    @keyframes particleOrbit {
+      0% {
+        transform: rotate(0deg) translateX(110px) rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg) translateX(110px) rotate(-360deg);
+      }
+    }
+
+    .energy-circle.ready .energy-particle {
+      animation-duration: 1s !important;
+      background: radial-gradient(circle, 
+        #00ffcc 0%, 
+        rgba(0, 255, 204, 0.5) 70%,
+        transparent 100%);
+      box-shadow: 0 0 15px #00ffcc, 
+                  0 0 30px #00ffcc;
+    }
+
+    /* ===== АНИМАЦИИ КОИНОВ ===== */
     .coin-fly-to-balance {
       position: fixed;
       font-size: 20px;
@@ -589,21 +727,7 @@
       100% { opacity: 0; transform: translate(calc(var(--tx) * 100px), calc(var(--ty) * 100px - 100px)) scale(1.5) rotate(720deg); }
     }
 
-    @media (max-width: 480px) {
-      .container { padding: 25px 15px; margin: 10px; border-radius: 25px; }
-      #balance { font-size: 32px; }
-      .energy-container { width: 180px; height: 180px; }
-      .energy-inner { width: 130px; height: 130px; }
-      .energy-text { font-size: 42px; }
-      button { padding: 16px 25px; font-size: 18px; }
-    }
-
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
-    ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--neon-purple); }
-
-    /* Элементы для анимаций */
+    /* ===== ЭЛЕМЕНТЫ ДЛЯ АНИМАЦИЙ ===== */
     #levelUpZoom {
       position: fixed;
       top: 50%;
@@ -637,10 +761,37 @@
       pointer-events: none;
       z-index: 999;
     }
+
+    /* ===== АДАПТИВНОСТЬ ===== */
+    @media (max-width: 480px) {
+      .container { padding: 25px 15px; margin: 10px; border-radius: 25px; }
+      #balance { font-size: 32px; }
+      .energy-container { width: 180px; height: 180px; }
+      .energy-inner { width: 130px; height: 130px; }
+      .energy-text { font-size: 42px; }
+      button { padding: 16px 25px; font-size: 18px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .energy-particle,
+      .meteor,
+      #moonPhase,
+      .upgrade-icon {
+        animation: none !important;
+      }
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+    ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--neon-purple); }
   </style>
 </head>
 <body class="level-1">
   <div id="starfield"></div>
+  <div id="meteorShower"></div>
+  <div id="energyParticles"></div>
+  <div id="particles-js"></div>
   <div id="levelUpZoom"></div>
   <div id="coinExplosion"></div>
   
@@ -789,7 +940,175 @@
 
     console.log('UI elements loaded:', Object.keys(elements));
 
-    // ========== ВИЗУАЛЬНЫЕ ФУНКЦИИ ==========
+    // ========== КОСМИЧЕСКИЕ АНИМАЦИИ ==========
+    
+    // 1. Метеоритный дождь
+    function createMeteorShower() {
+      console.log('Creating meteor shower...');
+      const meteorContainer = document.getElementById('meteorShower');
+      
+      function createMeteor() {
+        const meteor = document.createElement('div');
+        meteor.className = 'meteor';
+        
+        const startX = Math.random() * window.innerWidth;
+        meteor.style.left = startX + 'px';
+        meteor.style.top = '-10px';
+        
+        const length = Math.random() * 100 + 50;
+        const duration = Math.random() * 2 + 1;
+        const delay = Math.random() * 8;
+        
+        meteor.style.opacity = Math.random() * 0.7 + 0.3;
+        
+        const colors = [
+          'rgba(0, 204, 255, 0.8)',
+          'rgba(157, 78, 221, 0.8)',
+          'rgba(255, 255, 255, 0.8)'
+        ];
+        meteor.style.background = `linear-gradient(90deg, transparent, ${
+          colors[Math.floor(Math.random() * colors.length)]
+        }, transparent)`;
+        
+        const style = document.createElement('style');
+        style.textContent = `
+          @keyframes fall {
+            0% {
+              transform: translateY(0) translateX(0);
+              opacity: 0;
+            }
+            10% {
+              opacity: 1;
+            }
+            90% {
+              opacity: 0.8;
+            }
+            100% {
+              transform: translateY(100vh) translateX(${Math.random() * 100 - 50}px);
+              opacity: 0;
+            }
+          }
+        `;
+        document.head.appendChild(style);
+        
+        meteor.style.animation = `fall ${duration}s linear ${delay}s forwards`;
+        meteorContainer.appendChild(meteor);
+        
+        setTimeout(() => {
+          if (meteor.parentNode) meteor.remove();
+        }, (duration + delay) * 1000);
+        
+        if (Math.random() < 0.3) console.log('⭐ Star fell at position', Math.round(startX));
+        
+        return meteor;
+      }
+      
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => createMeteor(), i * 2000);
+      }
+      
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          createMeteor();
+        }
+      }, 3000);
+    }
+
+    // 2. Частицы энергии вокруг шкалы
+    function createEnergyParticles() {
+      console.log('Creating energy particles...');
+      const particleContainer = document.getElementById('energyParticles');
+      const energyCircle = document.querySelector('.energy-circle');
+      
+      for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'energy-particle';
+        
+        const size = Math.random() * 3 + 2;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        
+        const isBlue = Math.random() > 0.5;
+        particle.style.background = isBlue
+          ? 'radial-gradient(circle, #00ccff, rgba(0, 204, 255, 0.3))'
+          : 'radial-gradient(circle, #9d4edd, rgba(157, 78, 221, 0.3))';
+        
+        const duration = Math.random() * 4 + 3;
+        const delay = Math.random() * 2;
+        
+        particle.style.animation = `particleOrbit ${duration}s linear ${delay}s infinite`;
+        particleContainer.appendChild(particle);
+      }
+      
+      const observer = new MutationObserver(() => {
+        const isReady = energyCircle.classList.contains('ready');
+        const particles = document.querySelectorAll('.energy-particle');
+        
+        particles.forEach(p => {
+          if (isReady) {
+            p.classList.add('fast');
+            p.style.animationPlayState = 'running';
+          } else {
+            p.classList.remove('fast');
+            p.style.animationPlayState = 'running';
+          }
+        });
+      });
+      
+      observer.observe(energyCircle, { 
+        attributes: true, 
+        attributeFilter: ['class'] 
+      });
+    }
+
+    // 3. tsParticles космический фон
+    function initParticles() {
+      if (typeof tsParticles === 'undefined') {
+        console.warn('tsParticles not loaded, skipping particle background');
+        return;
+      }
+      
+      console.log('Initializing tsParticles...');
+      
+      tsParticles.load('particles-js', {
+        fpsLimit: 60,
+        particles: {
+          number: { value: 40 },
+          color: { value: ['#00ccff', '#9d4edd', '#ffffff'] },
+          shape: { type: 'circle' },
+          opacity: { value: 0.5, random: true },
+          size: { value: 1, random: { enable: true, minimumValue: 0.5 } },
+          move: {
+            enable: true,
+            speed: 0.3,
+            direction: 'none',
+            random: true,
+            straight: false,
+            out_mode: 'out'
+          },
+          twinkle: {
+            particles: {
+              enable: true,
+              frequency: 0.05,
+              opacity: 1
+            }
+          }
+        },
+        interactivity: {
+          events: {
+            onhover: { enable: true, mode: 'repulse' }
+          }
+        },
+        detectRetina: true,
+        background: { color: 'transparent' }
+      }).then(() => {
+        console.log('tsParticles initialized successfully');
+      }).catch(error => {
+        console.error('Error initializing tsParticles:', error);
+      });
+    }
+
+    // 4. Звёздное поле
     function createStarfield() {
       console.log('Creating starfield...');
       const starfield = document.getElementById('starfield');
@@ -806,60 +1125,6 @@
       }
     }
 
-    function updateMoonPhase() {
-      const moonPhase = document.getElementById('moonPhase');
-      moonPhase.className = '';
-      
-      if (gameState.moonLevel >= 15) {
-        moonPhase.classList.add('moon-phase-4');
-      } else if (gameState.moonLevel >= 10) {
-        moonPhase.classList.add('moon-phase-3');
-      } else if (gameState.moonLevel >= 5) {
-        moonPhase.classList.add('moon-phase-2');
-      } else {
-        moonPhase.classList.add('moon-phase-1');
-      }
-      console.log(`Moon phase updated to level ${gameState.moonLevel}`);
-    }
-
-    function updateUpgradeCards() {
-      const quantumLevel = gameState.upgradeQuantum;
-      const psiLevel = gameState.upgradePsi;
-      
-      document.getElementById('quantumLevel').textContent = quantumLevel;
-      document.getElementById('quantumProgress').style.width = `${(quantumLevel / 5) * 100}%`;
-      
-      const quantumCosts = [1200, 3000, 7500, 18000, 40000];
-      const quantumCard = document.getElementById('upgradeQuantumCard');
-      
-      if (quantumLevel >= 5) {
-        document.getElementById('quantumCost').textContent = 'МАКС УРОВЕНЬ';
-        quantumCard.classList.add('max');
-        quantumCard.classList.remove('disabled');
-      } else {
-        document.getElementById('quantumCost').textContent = `${quantumCosts[quantumLevel]} коинов`;
-        quantumCard.classList.remove('max');
-        quantumCard.classList.toggle('disabled', gameState.balance < quantumCosts[quantumLevel]);
-      }
-      
-      document.getElementById('psiLevel').textContent = psiLevel;
-      document.getElementById('psiProgress').style.width = `${(psiLevel / 5) * 100}%`;
-      
-      const psiCosts = [2000, 5000, 12000, 28000, 60000];
-      const psiCard = document.getElementById('upgradePsiCard');
-      
-      if (psiLevel >= 5) {
-        document.getElementById('psiCost').textContent = 'МАКС УРОВЕНЬ';
-        psiCard.classList.add('max');
-        psiCard.classList.remove('disabled');
-      } else {
-        document.getElementById('psiCost').textContent = `${psiCosts[psiLevel]} коинов`;
-        psiCard.classList.remove('max');
-        psiCard.classList.toggle('disabled', gameState.balance < psiCosts[psiLevel]);
-      }
-      console.log('Upgrade cards updated');
-    }
-
     // ========== ОСНОВНАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ UI ==========
     function updateUI() {
       try {
@@ -871,7 +1136,20 @@
         // 2. Уровень Луны
         elements.level.textContent = `Уровень Луны: ${gameState.moonLevel} (${gameState.energiesCollected}/5 энергии)`;
         
-        // 3. Шкала энергии
+        // 3. Фаза Луны
+        const moonPhase = document.getElementById('moonPhase');
+        moonPhase.className = '';
+        if (gameState.moonLevel >= 15) {
+          moonPhase.classList.add('moon-phase-4');
+        } else if (gameState.moonLevel >= 10) {
+          moonPhase.classList.add('moon-phase-3');
+        } else if (gameState.moonLevel >= 5) {
+          moonPhase.classList.add('moon-phase-2');
+        } else {
+          moonPhase.classList.add('moon-phase-1');
+        }
+        
+        // 4. Шкала энергии
         const chargeTime = getChargeTime() * 1000;
         const elapsed = Date.now() - gameState.lastEnergyCollectTime;
         const progress = Math.min(100, (elapsed / chargeTime) * 100);
@@ -891,7 +1169,7 @@
           elements.collectBtn.classList.remove('ready');
         }
         
-        // 4. Кнопка "Собрать"
+        // 5. Кнопка "Собрать"
         const baseReward = getBaseReward();
         if (progress >= 100) {
           elements.collectBtn.disabled = false;
@@ -904,7 +1182,7 @@
           elements.collectBtn.classList.add('disabled');
         }
         
-        // 5. Кнопка "Ускорить"
+        // 6. Кнопка "Ускорить"
         const adCooldown = 90 * 1000;
         const timeSinceLastAd = Date.now() - gameState.lastAdWatchTime;
         const adTimeLeft = adCooldown - timeSinceLastAd;
@@ -926,7 +1204,7 @@
           elements.boostBtn.classList.add('ready');
         }
         
-        // 6. Сундук
+        // 7. Сундук
         const chestTimeLeft = gameState.nextChestTime - Date.now();
         
         if (chestTimeLeft <= 0 && !gameState.chestOpened) {
@@ -953,9 +1231,41 @@
           elements.chestBtn.classList.remove('ready');
         }
         
-        // 7. Визуальные обновления
-        updateMoonPhase();
-        updateUpgradeCards();
+        // 8. Карточки улучшений
+        const quantumLevel = gameState.upgradeQuantum;
+        const psiLevel = gameState.upgradePsi;
+        
+        document.getElementById('quantumLevel').textContent = quantumLevel;
+        document.getElementById('quantumProgress').style.width = `${(quantumLevel / 5) * 100}%`;
+        
+        const quantumCosts = [1200, 3000, 7500, 18000, 40000];
+        const quantumCard = document.getElementById('upgradeQuantumCard');
+        
+        if (quantumLevel >= 5) {
+          document.getElementById('quantumCost').textContent = 'МАКС УРОВЕНЬ';
+          quantumCard.classList.add('max');
+          quantumCard.classList.remove('disabled');
+        } else {
+          document.getElementById('quantumCost').textContent = `${quantumCosts[quantumLevel]} коинов`;
+          quantumCard.classList.remove('max');
+          quantumCard.classList.toggle('disabled', gameState.balance < quantumCosts[quantumLevel]);
+        }
+        
+        document.getElementById('psiLevel').textContent = psiLevel;
+        document.getElementById('psiProgress').style.width = `${(psiLevel / 5) * 100}%`;
+        
+        const psiCosts = [2000, 5000, 12000, 28000, 60000];
+        const psiCard = document.getElementById('upgradePsiCard');
+        
+        if (psiLevel >= 5) {
+          document.getElementById('psiCost').textContent = 'МАКС УРОВЕНЬ';
+          psiCard.classList.add('max');
+          psiCard.classList.remove('disabled');
+        } else {
+          document.getElementById('psiCost').textContent = `${psiCosts[psiLevel]} коинов`;
+          psiCard.classList.remove('max');
+          psiCard.classList.toggle('disabled', gameState.balance < psiCosts[psiLevel]);
+        }
         
         console.log('UI updated successfully');
         
@@ -1001,7 +1311,6 @@
       saveGameState();
       updateUI();
       
-      // Анимация
       createFlyingCoins(reward, this);
       
       setTimeout(() => elements.status.textContent = '', 3000);
@@ -1109,7 +1418,6 @@
       
       elements.status.textContent = `🎁 СУНДУК ОТКРЫТ! +${reward} коинов!`;
       
-      // Анимация взрыва
       const rect = this.getBoundingClientRect();
       animateCoinExplosion(reward, rect.left + rect.width / 2, rect.top + rect.height / 2);
       
@@ -1297,11 +1605,14 @@
       }
     }
 
-    // ========== ИНИЦИАЛИЗАЦИЯ ==========
+    // ========== ИНИЦИАЛИЗАЦИЯ ИГРЫ ==========
     console.log('Initializing game...');
     
-    // Создаём звёздное поле
+    // Создаём космические анимации
     createStarfield();
+    createMeteorShower();
+    createEnergyParticles();
+    initParticles();
     
     // Первоначальное обновление UI
     updateUI();
@@ -1311,6 +1622,16 @@
     
     // Запускаем обновление каждую секунду
     setInterval(updateUI, 1000);
+    
+    // Оптимизация производительности
+    document.addEventListener('visibilitychange', () => {
+      const particles = document.querySelectorAll('.energy-particle, .meteor');
+      if (document.hidden) {
+        particles.forEach(p => p.style.animationPlayState = 'paused');
+      } else {
+        particles.forEach(p => p.style.animationPlayState = 'running');
+      }
+    });
     
     console.log('=== MOON ENERGY INITIALIZED SUCCESSFULLY ===');
     console.log('Game state:', gameState);
