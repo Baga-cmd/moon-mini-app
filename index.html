@@ -215,26 +215,19 @@
     }
 
     .moon-phase-1 {
-      background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
-      filter: brightness(0.9) contrast(1.1);
+      background-image: url('https://images.unsplash.com/photo-1532693322450-2cb5c511067c?w=800&q=85');
     }
-
     .moon-phase-2 {
-      background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
-      filter: brightness(1) contrast(1.05);
-      transform: translate(-50%, -50%) scaleX(0.85);
+      background-image: url('https://images.unsplash.com/photo-1560807707-8cc77767d783?w=800&q=85');
+      transform: translate(-50%, -50%) scaleX(0.92);
     }
-
     .moon-phase-3 {
-      background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
-      filter: brightness(1.1) contrast(1);
-      box-shadow: 0 0 80px rgba(249, 240, 210, 0.5), inset 0 0 50px rgba(255, 240, 200, 0.4);
+      background-image: url('https://images.unsplash.com/photo-1532693322450-2cb5c511067c?w=800&q=90');
+      box-shadow: 0 0 90px rgba(255, 240, 200, 0.7), inset 0 0 60px rgba(255, 240, 200, 0.5);
     }
-
     .moon-phase-4 {
-      background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
-      filter: brightness(0.95) contrast(1.05);
-      transform: translate(-50%, -50%) scaleX(0.85);
+      background-image: url('https://images.unsplash.com/photo-1560807707-8cc77767d783?w=800&q=85');
+      transform: translate(-50%, -50%) scaleX(0.92);
     }
 
     .moon-phase-4::after {
@@ -1182,7 +1175,7 @@
           psiCard.classList.toggle('disabled', gameState.balance < psiCosts[psiLevel]);
         }
         
-        console.log('Status message updated');
+        console.log('UI updated');
         
       } catch (error) {
         console.error('Error in updateUI:', error);
@@ -1191,7 +1184,7 @@
     }
 
     elements.collectBtnInside.addEventListener('click', function() {
-      console.log('Button inside moon clicked');
+      console.log('Collect button clicked');
       
       const chargeTime = getChargeTime() * 1000;
       const elapsed = Date.now() - gameState.lastEnergyCollectTime;
@@ -1442,7 +1435,8 @@
 
     // Предзагрузка изображений Луны
     const moonImages = [
-      'https://images.unsplash.com/photo-1528164344705-47542687000d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1532693322450-2cb5c511067c?w=800&q=85',
+      'https://images.unsplash.com/photo-1560807707-8cc77767d783?w=800&q=85'
     ];
     moonImages.forEach(src => {
       const img = new Image();
@@ -1473,4 +1467,4 @@
     console.log('=== MOON ENERGY INITIALIZED SUCCESSFULLY ===');
   </script>
 </body>
-  </html>
+</html>
