@@ -44,6 +44,7 @@
       padding: 20px 0;
     }
 
+    /* ===== ФОНОВЫЕ ЭЛЕМЕНТЫ ===== */
     #starfield, #meteorShower, #energyParticles {
       position: fixed;
       top: 0;
@@ -51,7 +52,7 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-index: -2;
+      z-index: -1;
     }
 
     #particles-js {
@@ -60,33 +61,25 @@
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: -3;
+      z-index: -2;
       pointer-events: none;
     }
 
-    .star {
-      position: absolute;
-      background: white;
-      border-radius: 50%;
-      animation: twinkle 3s infinite alternate;
-    }
-
-    @keyframes twinkle {
-      0% { opacity: 0.3; }
-      100% { opacity: 1; }
-    }
-
+    /* ===== ОСНОВНОЙ КОНТЕЙНЕР (ПОЛУПРОЗРАЧНЫЙ) ===== */
     .container {
-      background: linear-gradient(145deg, rgba(10, 10, 26, 0.9), rgba(21, 21, 43, 0.9));
+      background: linear-gradient(145deg, 
+        rgba(10, 10, 26, 0.75), 
+        rgba(21, 21, 43, 0.8));
       border-radius: 32px;
-      padding: 35px 25px;
+      padding: 30px 20px;
       width: 95%;
       max-width: 420px;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 
-                  0 0 0 1px rgba(255, 255, 255, 0.05), 
-                  inset 0 0 20px rgba(0, 204, 255, 0.1);
-      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        inset 0 0 20px rgba(0, 204, 255, 0.05);
+      backdrop-filter: blur(20px);
       position: relative;
       z-index: 1;
       margin: 20px auto;
@@ -101,7 +94,10 @@
       left: -2px;
       right: -2px;
       bottom: -2px;
-      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-green));
+      background: linear-gradient(45deg, 
+        rgba(0, 204, 255, 0.2), 
+        rgba(157, 78, 221, 0.2), 
+        rgba(0, 255, 157, 0.2));
       border-radius: 34px;
       z-index: -1;
       opacity: 0.3;
@@ -113,35 +109,44 @@
       100% { opacity: 0.4; }
     }
 
+    /* ===== БАЛАНС ===== */
     #balance {
-      font-size: 40px;
+      font-size: 36px;
       font-weight: 800;
       background: linear-gradient(135deg, var(--neon-gold), #ffed4e);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin: 15px 0 25px;
-      text-shadow: var(--glow-gold);
+      margin: 10px 0 20px;
+      text-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.5),
+        0 2px 4px rgba(0, 0, 0, 0.5);
       letter-spacing: 1px;
+      position: relative;
     }
 
+    /* ===== УРОВЕНЬ ЛУНЫ ===== */
     #level {
-      font-size: 22px;
+      font-size: 20px;
       margin: 15px 0;
       color: var(--neon-blue);
-      text-shadow: 0 0 15px rgba(0, 204, 255, 0.5);
+      text-shadow: 
+        0 0 15px rgba(0, 204, 255, 0.5),
+        0 2px 4px rgba(0, 0, 0, 0.5);
       font-weight: 600;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 12px 20px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px 20px;
       border-radius: 50px;
       display: inline-block;
-      border: 1px solid rgba(0, 204, 255, 0.3);
+      border: 1px solid rgba(0, 204, 255, 0.2);
+      backdrop-filter: blur(5px);
     }
 
+    /* ===== КОНТЕЙНЕР ЭНЕРГИИ ===== */
     .energy-container {
       position: relative;
       width: 220px;
       height: 220px;
-      margin: 25px auto;
+      margin: 20px auto;
     }
 
     .energy-circle {
@@ -153,15 +158,17 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      box-shadow: 0 0 40px rgba(0, 204, 255, 0.4), 
-                  inset 0 0 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 
+        0 0 40px rgba(0, 204, 255, 0.4), 
+        inset 0 0 30px rgba(0, 0, 0, 0.5);
       transition: all 0.5s ease;
     }
 
     .energy-circle.ready {
       animation: pulseEnergy 2s infinite;
-      box-shadow: 0 0 60px rgba(0, 204, 255, 0.8), 
-                  inset 0 0 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 
+        0 0 60px rgba(0, 204, 255, 0.8), 
+        inset 0 0 30px rgba(0, 0, 0, 0.5);
     }
 
     @keyframes pulseEnergy {
@@ -172,7 +179,9 @@
     .energy-inner {
       width: 160px;
       height: 160px;
-      background: radial-gradient(circle at 30% 30%, rgba(10, 10, 26, 0.9), rgba(21, 21, 43, 0.95));
+      background: radial-gradient(circle at 30% 30%, 
+        rgba(10, 10, 26, 0.9), 
+        rgba(21, 21, 43, 0.95));
       border-radius: 50%;
       display: flex;
       flex-direction: column;
@@ -180,9 +189,10 @@
       justify-content: center;
       border: 2px solid rgba(255, 255, 255, 0.1);
       position: relative;
+      overflow: hidden;
     }
 
-    /* ===== АНИМИРОВАННАЯ ЛУНА ===== */
+    /* ===== ЛУНА С ЕСТЕСТВЕННЫМ СВЕЧЕНИЕМ ===== */
     #moonPhase {
       position: absolute;
       width: 100px;
@@ -194,56 +204,60 @@
       z-index: 2;
       pointer-events: none;
       transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-      animation: moonBreathing 5s ease-in-out infinite alternate;
     }
 
-    @keyframes moonBreathing {
-      0% { 
-        transform: translate(-50%, -50%) scale(1);
-        filter: brightness(1);
-      }
-      100% { 
-        transform: translate(-50%, -50%) scale(1.05);
-        filter: brightness(1.2);
-      }
-    }
-
-    .energy-circle.ready #moonPhase {
-      animation: moonPulse 2s infinite;
-      filter: brightness(1.5) drop-shadow(0 0 30px gold);
-    }
-
-    @keyframes moonPulse {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); }
-      50% { transform: translate(-50%, -50%) scale(1.1); }
-    }
-
-    /* Фазы Луны через clip-path */
-    .moon-phase-1 {
-      background: radial-gradient(circle at 70% 50%, rgba(249, 240, 210, 0.9) 0%, rgba(230, 212, 163, 0.8) 30%, transparent 35%);
-      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 50%, 15% 25%, 15% 75%, 0% 50%);
-      box-shadow: inset 0 0 30px rgba(249, 240, 210, 0.3), 0 0 40px rgba(249, 240, 210, 0.2);
-    }
-
-    .moon-phase-2 {
-      background: radial-gradient(circle at 60% 50%, rgba(249, 240, 210, 0.95) 0%, rgba(230, 212, 163, 0.85) 40%, transparent 50%);
-      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 50%, 40% 10%, 40% 90%, 0% 50%);
-      box-shadow: inset 0 0 40px rgba(249, 240, 210, 0.4), 0 0 50px rgba(249, 240, 210, 0.3);
-    }
-
-    .moon-phase-3 {
-      background: radial-gradient(circle at 50% 50%, #f9f0d2 0%, #e6d4a3 30%, #d4b483 70%);
-      clip-path: circle(50% at 50% 50%);
-      box-shadow: inset 0 0 50px rgba(249, 240, 210, 0.5), 
-                  0 0 60px rgba(249, 240, 210, 0.6), 
-                  0 0 100px rgba(249, 240, 210, 0.3);
+    /* Естественное свечение через radial-gradient + filter */
+    .moon-phase-1::before,
+    .moon-phase-2::before,
+    .moon-phase-3::before,
+    .moon-phase-4::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, 
+        rgba(249, 240, 210, 0.1) 0%,
+        rgba(249, 240, 210, 0.05) 30%,
+        transparent 70%);
+      filter: blur(15px);
+      z-index: -1;
       animation: moonGlow 3s infinite alternate;
     }
 
+    .moon-phase-1 {
+      background: radial-gradient(circle at 70% 50%, 
+        rgba(249, 240, 210, 0.85) 0%, 
+        rgba(230, 212, 163, 0.75) 30%, 
+        transparent 35%);
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 50%, 15% 25%, 15% 75%, 0% 50%);
+    }
+
+    .moon-phase-2 {
+      background: radial-gradient(circle at 60% 50%, 
+        rgba(249, 240, 210, 0.9) 0%, 
+        rgba(230, 212, 163, 0.8) 40%, 
+        transparent 50%);
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 50%, 40% 10%, 40% 90%, 0% 50%);
+    }
+
+    .moon-phase-3 {
+      background: radial-gradient(circle at 50% 50%, 
+        #f9f0d2 0%, 
+        #e6d4a3 30%, 
+        #d4b483 70%);
+      clip-path: circle(50% at 50% 50%);
+    }
+
     .moon-phase-4 {
-      background: radial-gradient(circle at 40% 50%, rgba(249, 240, 210, 0.9) 0%, rgba(230, 212, 163, 0.8) 40%, transparent 50%);
+      background: radial-gradient(circle at 40% 50%, 
+        rgba(249, 240, 210, 0.85) 0%, 
+        rgba(230, 212, 163, 0.75) 40%, 
+        transparent 50%);
       clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 100% 50%, 60% 10%, 60% 90%, 100% 50%);
-      box-shadow: inset 0 0 40px rgba(249, 240, 210, 0.4), 0 0 50px rgba(249, 240, 210, 0.3);
     }
 
     .moon-phase-4::after {
@@ -255,21 +269,13 @@
       border-radius: 50%;
       top: 20px;
       right: -30px;
-      box-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+      filter: drop-shadow(0 0 10px rgba(157, 78, 221, 0.5));
       animation: planetOrbit 10s linear infinite;
     }
 
     @keyframes moonGlow {
-      0% { 
-        box-shadow: inset 0 0 50px rgba(249, 240, 210, 0.5), 
-                    0 0 60px rgba(249, 240, 210, 0.6), 
-                    0 0 100px rgba(249, 240, 210, 0.3); 
-      }
-      100% { 
-        box-shadow: inset 0 0 60px rgba(249, 240, 210, 0.6), 
-                    0 0 80px rgba(249, 240, 210, 0.8), 
-                    0 0 120px rgba(249, 240, 210, 0.4); 
-      }
+      0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
     }
 
     @keyframes planetOrbit {
@@ -277,16 +283,69 @@
       100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
     }
 
-    /* ===== КНОПКИ ===== */
+    /* ===== ТЕКСТ ЭНЕРГИИ (ЧИТАЕМЫЙ) ===== */
+    .energy-text {
+      font-size: 44px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--neon-blue), #00ffcc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 
+        0 0 20px rgba(0, 204, 255, 0.5),
+        0 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 0 2px rgba(0, 0, 0, 0.3);
+      margin-bottom: 5px;
+      position: relative;
+      z-index: 3;
+      letter-spacing: 1px;
+    }
+
+    .energy-text.ready {
+      animation: textPulse 1.5s infinite;
+    }
+
+    @keyframes textPulse {
+      0%, 100% { 
+        text-shadow: 
+          0 0 20px rgba(0, 204, 255, 0.5),
+          0 2px 4px rgba(0, 0, 0, 0.8),
+          0 0 0 2px rgba(0, 0, 0, 0.3);
+      }
+      50% { 
+        text-shadow: 
+          0 0 30px rgba(0, 255, 157, 0.7),
+          0 2px 6px rgba(0, 0, 0, 0.9),
+          0 0 0 3px rgba(0, 255, 157, 0.2);
+      }
+    }
+
+    .energy-label {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 300;
+      position: relative;
+      z-index: 3;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ===== КНОПКИ С ОПИСАНИЯМИ ===== */
+    .button-container {
+      position: relative;
+      margin: 15px auto;
+      width: 90%;
+      max-width: 320px;
+    }
+
     button {
-      padding: 18px 35px;
-      font-size: 20px;
-      margin: 12px auto;
+      padding: 16px 30px;
+      font-size: 18px;
+      margin: 0 auto 5px;
       border: none;
       border-radius: 50px;
       cursor: pointer;
-      width: 90%;
-      max-width: 320px;
+      width: 100%;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       font-weight: 600;
       letter-spacing: 1px;
@@ -304,7 +363,10 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.15), 
+        transparent);
       transition: left 0.5s ease;
     }
 
@@ -315,12 +377,16 @@
     #collectBtn {
       background: linear-gradient(135deg, #00cc66, #00ff99);
       color: white;
-      box-shadow: 0 8px 25px rgba(0, 204, 102, 0.4), 0 0 0 2px rgba(0, 255, 153, 0.2);
+      box-shadow: 
+        0 6px 20px rgba(0, 204, 102, 0.4), 
+        0 0 0 1px rgba(0, 255, 153, 0.2);
     }
 
     #collectBtn:hover:not(.disabled) {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 35px rgba(0, 204, 102, 0.6), 0 0 0 3px rgba(0, 255, 153, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 
+        0 10px 25px rgba(0, 204, 102, 0.6), 
+        0 0 0 2px rgba(0, 255, 153, 0.3);
     }
 
     #collectBtn.ready {
@@ -328,19 +394,23 @@
     }
 
     @keyframes pulseGreen {
-      0%, 100% { box-shadow: 0 8px 25px rgba(0, 204, 102, 0.4); }
-      50% { box-shadow: 0 8px 35px rgba(0, 204, 102, 0.8); }
+      0%, 100% { box-shadow: 0 6px 20px rgba(0, 204, 102, 0.4); }
+      50% { box-shadow: 0 6px 25px rgba(0, 204, 102, 0.8); }
     }
 
     #boostBtn {
       background: linear-gradient(135deg, #0066ff, #00aaff);
       color: white;
-      box-shadow: 0 8px 25px rgba(0, 102, 255, 0.4), 0 0 0 2px rgba(0, 170, 255, 0.2);
+      box-shadow: 
+        0 6px 20px rgba(0, 102, 255, 0.4), 
+        0 0 0 1px rgba(0, 170, 255, 0.2);
     }
 
     #boostBtn:hover:not(.disabled) {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 35px rgba(0, 102, 255, 0.6), 0 0 0 3px rgba(0, 170, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 
+        0 10px 25px rgba(0, 102, 255, 0.6), 
+        0 0 0 2px rgba(0, 170, 255, 0.3);
     }
 
     #boostBtn.ready {
@@ -348,8 +418,8 @@
     }
 
     @keyframes pulseBlue {
-      0%, 100% { box-shadow: 0 8px 25px rgba(0, 102, 255, 0.4); }
-      50% { box-shadow: 0 8px 35px rgba(0, 102, 255, 0.8); }
+      0%, 100% { box-shadow: 0 6px 20px rgba(0, 102, 255, 0.4); }
+      50% { box-shadow: 0 6px 25px rgba(0, 102, 255, 0.8); }
     }
 
     button.disabled {
@@ -360,14 +430,25 @@
       transform: none !important;
     }
 
+    /* Описания под кнопками */
+    .button-description {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 2px;
+      text-align: center;
+      font-weight: 300;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
     /* ===== СУНДУК ===== */
     #chestSection {
       margin: 25px 0;
       padding: 20px;
       background: rgba(255, 215, 0, 0.05);
       border-radius: 20px;
-      border: 1px solid rgba(255, 215, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.15);
       position: relative;
+      backdrop-filter: blur(5px);
     }
 
     #chestSection::before {
@@ -376,29 +457,36 @@
       top: -15px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 24px;
+      font-size: 20px;
       background: var(--space-dark);
       padding: 0 15px;
+      z-index: 2;
     }
 
     #chestTimer {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 600;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       color: var(--neon-gold);
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      text-shadow: 
+        0 0 10px rgba(255, 215, 0, 0.5),
+        0 1px 2px rgba(0, 0, 0, 0.5);
     }
 
     #chestBtn {
       background: linear-gradient(135deg, #ffd700, #ffed4e);
       color: #333;
       font-weight: 700;
-      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4), 0 0 0 2px rgba(255, 215, 0, 0.2);
+      box-shadow: 
+        0 6px 20px rgba(255, 215, 0, 0.4), 
+        0 0 0 1px rgba(255, 215, 0, 0.2);
     }
 
     #chestBtn:hover:not(.disabled) {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6), 0 0 0 3px rgba(255, 215, 0, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 
+        0 10px 25px rgba(255, 215, 0, 0.6), 
+        0 0 0 2px rgba(255, 215, 0, 0.3);
     }
 
     #chestBtn.ready {
@@ -407,17 +495,18 @@
 
     @keyframes pulseGold {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+      50% { transform: scale(1.03); }
     }
 
-    /* ===== УЛУЧШЕНИЯ ===== */
+    /* ===== УЛУЧШЕНИЯ С ОПИСАНИЯМИ ===== */
     #upgrades {
-      margin: 30px 0 20px;
-      padding: 25px;
-      background: rgba(10, 10, 26, 0.5);
+      margin: 25px 0 20px;
+      padding: 20px;
+      background: rgba(10, 10, 26, 0.3);
       border-radius: 25px;
-      border: 1px solid rgba(157, 78, 221, 0.2);
+      border: 1px solid rgba(157, 78, 221, 0.15);
       position: relative;
+      backdrop-filter: blur(10px);
     }
 
     #upgrades::before {
@@ -427,16 +516,21 @@
       left: 0;
       right: 0;
       height: 1px;
-      background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(157, 78, 221, 0.3), 
+        transparent);
     }
 
     #upgrades h3 {
-      font-size: 22px;
+      font-size: 20px;
       color: var(--neon-purple);
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       text-align: center;
-      text-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
-      letter-spacing: 2px;
+      text-shadow: 
+        0 0 15px rgba(157, 78, 221, 0.5),
+        0 1px 2px rgba(0, 0, 0, 0.5);
+      letter-spacing: 1px;
       position: relative;
       padding-bottom: 10px;
     }
@@ -447,21 +541,25 @@
       bottom: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 100px;
+      width: 80px;
       height: 2px;
-      background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+      background: linear-gradient(90deg, 
+        transparent, 
+        var(--neon-purple), 
+        transparent);
     }
 
-    /* ===== АНИМИРОВАННЫЕ КАРТОЧКИ УЛУЧШЕНИЙ ===== */
     .upgrade-card {
-      background: linear-gradient(145deg, rgba(21, 21, 43, 0.8), rgba(10, 10, 26, 0.9));
+      background: linear-gradient(145deg, 
+        rgba(21, 21, 43, 0.6), 
+        rgba(10, 10, 26, 0.7));
       border-radius: 20px;
-      padding: 20px;
-      margin: 15px auto;
-      border: 1px solid rgba(157, 78, 221, 0.3);
+      padding: 15px;
+      margin: 12px auto;
+      border: 1px solid rgba(157, 78, 221, 0.2);
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 15px;
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
@@ -477,7 +575,10 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.08), 
+        transparent);
       transition: left 0.6s ease;
     }
 
@@ -486,14 +587,18 @@
     }
 
     .upgrade-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-3px);
       border-color: var(--neon-purple);
-      box-shadow: 0 15px 35px rgba(157, 78, 221, 0.3), 0 0 0 2px rgba(157, 78, 221, 0.2);
+      box-shadow: 
+        0 10px 25px rgba(157, 78, 221, 0.2), 
+        0 0 0 1px rgba(157, 78, 221, 0.1);
     }
 
     .upgrade-card.max {
       border-color: var(--neon-gold);
-      background: linear-gradient(145deg, rgba(255, 215, 0, 0.1), rgba(10, 10, 26, 0.9));
+      background: linear-gradient(145deg, 
+        rgba(255, 215, 0, 0.08), 
+        rgba(10, 10, 26, 0.7));
     }
 
     .upgrade-card.max .upgrade-icon {
@@ -502,10 +607,10 @@
     }
 
     .upgrade-card.disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
       transform: none !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
       box-shadow: none !important;
     }
 
@@ -514,14 +619,16 @@
     }
 
     .upgrade-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 15px;
-      background: linear-gradient(135deg, rgba(157, 78, 221, 0.3), rgba(0, 204, 255, 0.3));
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, 
+        rgba(157, 78, 221, 0.2), 
+        rgba(0, 204, 255, 0.2));
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
+      font-size: 26px;
       flex-shrink: 0;
       transition: all 0.3s ease;
       animation: iconFloat 6s ease-in-out infinite;
@@ -537,15 +644,15 @@
 
     @keyframes iconFloat {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
+      50% { transform: translateY(-4px); }
     }
 
     @keyframes quantumPulse {
       0%, 100% { 
-        filter: brightness(1) drop-shadow(0 0 10px #00ccff);
+        filter: brightness(1) drop-shadow(0 0 8px #00ccff);
       }
       50% { 
-        filter: brightness(1.5) drop-shadow(0 0 20px #00ccff);
+        filter: brightness(1.3) drop-shadow(0 0 15px #00ccff);
       }
     }
 
@@ -560,78 +667,102 @@
     }
 
     .upgrade-name {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--neon-purple);
-      margin-bottom: 5px;
-      letter-spacing: 1px;
+      margin-bottom: 2px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .upgrade-description {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      font-weight: 300;
+      line-height: 1.3;
     }
 
     .upgrade-level {
-      font-size: 14px;
+      font-size: 12px;
       color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .upgrade-progress {
-      height: 6px;
+      height: 4px;
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      margin: 10px 0;
+      border-radius: 2px;
+      margin: 8px 0;
       overflow: hidden;
     }
 
     .progress-bar {
       height: 100%;
       background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
-      border-radius: 3px;
+      border-radius: 2px;
       width: 0%;
       transition: width 0.5s ease;
     }
 
     .upgrade-cost {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--neon-gold);
-      margin-top: 10px;
+      margin-top: 8px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     }
 
     /* ===== СТАТУС-СООБЩЕНИЯ ===== */
     .status-message {
-      margin: 20px 0;
-      padding: 18px;
-      border-radius: 15px;
-      background: rgba(0, 204, 255, 0.1);
-      font-size: 18px;
-      min-height: 30px;
-      border: 1px solid rgba(0, 204, 255, 0.3);
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 12px;
+      background: rgba(0, 204, 255, 0.08);
+      font-size: 16px;
+      min-height: 24px;
+      border: 1px solid rgba(0, 204, 255, 0.2);
       color: var(--neon-blue);
       font-weight: 500;
-      text-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+      text-shadow: 
+        0 0 10px rgba(0, 204, 255, 0.5),
+        0 1px 2px rgba(0, 0, 0, 0.5);
       transition: all 0.3s ease;
       backdrop-filter: blur(5px);
     }
 
     .status-message.level-up {
-      background: rgba(255, 215, 0, 0.15);
+      background: rgba(255, 215, 0, 0.12);
       border-color: var(--neon-gold);
       color: var(--neon-gold);
       animation: levelUpMessage 0.5s ease;
     }
 
     @keyframes levelUpMessage {
-      0% { transform: scale(0.9); opacity: 0; }
+      0% { transform: scale(0.95); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
 
-    /* ===== МЕТЕОРИТНЫЙ ДОЖДЬ ===== */
+    /* ===== АНИМАЦИИ КОСМОСА ===== */
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.2; }
+      100% { opacity: 1; }
+    }
+
     .meteor {
       position: fixed;
       width: 2px;
       height: 2px;
       background: linear-gradient(90deg, 
         transparent, 
-        rgba(255, 255, 255, 0.8), 
+        rgba(255, 255, 255, 0.9), 
         transparent);
       border-radius: 50%;
       z-index: -1;
@@ -639,21 +770,6 @@
       filter: blur(0.5px);
     }
 
-    .meteor::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      right: 0;
-      width: 100px;
-      height: 1px;
-      background: linear-gradient(90deg, 
-        transparent, 
-        rgba(100, 200, 255, 0.6), 
-        transparent);
-      transform-origin: right center;
-    }
-
-    /* ===== ЧАСТИЦЫ ЭНЕРГИИ ВОКРУГ ШКАЛЫ ===== */
     .energy-particle {
       position: absolute;
       width: 4px;
@@ -696,10 +812,12 @@
     /* ===== АНИМАЦИИ КОИНОВ ===== */
     .coin-fly-to-balance {
       position: fixed;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 800;
       color: var(--neon-gold);
-      text-shadow: 0 0 10px gold, 0 0 20px gold;
+      text-shadow: 
+        0 0 10px gold, 
+        0 0 20px gold;
       pointer-events: none;
       z-index: 1000;
       animation: flyToBalance 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
@@ -714,7 +832,7 @@
     .coin-particle {
       position: absolute;
       color: var(--neon-gold);
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 800;
       text-shadow: 0 0 10px gold, 0 0 20px gold;
       opacity: 0;
@@ -735,7 +853,9 @@
       width: 100px;
       height: 100px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+      background: radial-gradient(circle, 
+        rgba(255, 215, 0, 0.3) 0%, 
+        transparent 70%);
       z-index: 1000;
       pointer-events: none;
       opacity: 0;
@@ -764,12 +884,37 @@
 
     /* ===== АДАПТИВНОСТЬ ===== */
     @media (max-width: 480px) {
-      .container { padding: 25px 15px; margin: 10px; border-radius: 25px; }
+      .container { 
+        padding: 20px 15px; 
+        margin: 10px; 
+        border-radius: 25px; 
+      }
       #balance { font-size: 32px; }
-      .energy-container { width: 180px; height: 180px; }
-      .energy-inner { width: 130px; height: 130px; }
-      .energy-text { font-size: 42px; }
-      button { padding: 16px 25px; font-size: 18px; }
+      .energy-container { 
+        width: 180px; 
+        height: 180px; 
+      }
+      .energy-inner { 
+        width: 130px; 
+        height: 130px; 
+      }
+      .energy-text { font-size: 38px; }
+      button { 
+        padding: 14px 20px; 
+        font-size: 16px; 
+      }
+      .button-description {
+        font-size: 11px;
+      }
+      .upgrade-card {
+        padding: 12px;
+        gap: 12px;
+      }
+      .upgrade-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -781,9 +926,9 @@
       }
     }
 
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
-    ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
+    ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--neon-purple); }
   </style>
 </head>
@@ -809,8 +954,15 @@
       </div>
     </div>
 
-    <button id="collectBtn">Ждите... (25 сек)</button>
-    <button id="boostBtn">Ускорить через рекламу (+650)</button>
+    <div class="button-container">
+      <button id="collectBtn">Ждите... (25 сек)</button>
+      <div class="button-description">Собирает энергию Луны → +коины</div>
+    </div>
+
+    <div class="button-container">
+      <button id="boostBtn">Ускорить через рекламу (+650)</button>
+      <div class="button-description">Просмотр рекламы → мгновенный сбор + бонус</div>
+    </div>
 
     <div id="chestSection">
       <div id="chestTimer">Сундук через 5:59:59</div>
@@ -819,10 +971,12 @@
 
     <div id="upgrades">
       <h3>🛠 УЛУЧШЕНИЯ БАЗЫ</h3>
+      
       <div class="upgrade-card" id="upgradeQuantumCard">
         <div class="upgrade-icon">⚡</div>
         <div class="upgrade-info">
           <div class="upgrade-name">КВАНТОВЫЙ УСКОРИТЕЛЬ</div>
+          <div class="upgrade-description">Уменьшает время зарядки энергии</div>
           <div class="upgrade-level">Ур. <span id="quantumLevel">0</span>/5</div>
           <div class="upgrade-progress">
             <div class="progress-bar" id="quantumProgress"></div>
@@ -835,6 +989,7 @@
         <div class="upgrade-icon">🌀</div>
         <div class="upgrade-info">
           <div class="upgrade-name">ПСИ-УСИЛИТЕЛЬ</div>
+          <div class="upgrade-description">Увеличивает награду за сбор</div>
           <div class="upgrade-level">Ур. <span id="psiLevel">0</span>/5</div>
           <div class="upgrade-progress">
             <div class="progress-bar" id="psiProgress"></div>
@@ -905,22 +1060,17 @@
       const min = 150 + 30 * gameState.upgradePsi;
       const max = 250 + 50 * gameState.upgradePsi;
       const reward = Math.floor((min + max) / 2);
-      console.log(`Base reward calculated: ${reward}`);
       return reward;
     }
 
     function getAdReward() {
       const base = getBaseReward();
-      const reward = (base * 3) + 100;
-      console.log(`Ad reward calculated: ${reward}`);
-      return reward;
+      return (base * 3) + 100;
     }
 
     function getChestReward() {
       const base = getBaseReward();
-      const reward = (base * 15) + 3500;
-      console.log(`Chest reward calculated: ${reward}`);
-      return reward;
+      return (base * 15) + 3500;
     }
 
     // ========== UI ЭЛЕМЕНТЫ ==========
@@ -938,13 +1088,26 @@
       status: document.getElementById('status')
     };
 
-    console.log('UI elements loaded:', Object.keys(elements));
-
     // ========== КОСМИЧЕСКИЕ АНИМАЦИИ ==========
     
-    // 1. Метеоритный дождь
+    // 1. Звёздное поле
+    function createStarfield() {
+      const starfield = document.getElementById('starfield');
+      for (let i = 0; i < 200; i++) { // Больше звёзд
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.width = Math.random() * 3 + 1 + 'px';
+        star.style.height = star.style.width;
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.opacity = Math.random() * 0.7 + 0.3;
+        star.style.animationDelay = Math.random() * 5 + 's';
+        starfield.appendChild(star);
+      }
+    }
+
+    // 2. Метеоритный дождь (ярче и чаще)
     function createMeteorShower() {
-      console.log('Creating meteor shower...');
       const meteorContainer = document.getElementById('meteorShower');
       
       function createMeteor() {
@@ -955,41 +1118,19 @@
         meteor.style.left = startX + 'px';
         meteor.style.top = '-10px';
         
-        const length = Math.random() * 100 + 50;
-        const duration = Math.random() * 2 + 1;
-        const delay = Math.random() * 8;
+        const duration = Math.random() * 1.5 + 0.8;
+        const delay = Math.random() * 5;
         
-        meteor.style.opacity = Math.random() * 0.7 + 0.3;
+        meteor.style.opacity = Math.random() * 0.8 + 0.4;
         
         const colors = [
-          'rgba(0, 204, 255, 0.8)',
-          'rgba(157, 78, 221, 0.8)',
-          'rgba(255, 255, 255, 0.8)'
+          'rgba(0, 204, 255, 0.9)',
+          'rgba(157, 78, 221, 0.9)',
+          'rgba(255, 255, 255, 0.9)'
         ];
         meteor.style.background = `linear-gradient(90deg, transparent, ${
           colors[Math.floor(Math.random() * colors.length)]
         }, transparent)`;
-        
-        const style = document.createElement('style');
-        style.textContent = `
-          @keyframes fall {
-            0% {
-              transform: translateY(0) translateX(0);
-              opacity: 0;
-            }
-            10% {
-              opacity: 1;
-            }
-            90% {
-              opacity: 0.8;
-            }
-            100% {
-              transform: translateY(100vh) translateX(${Math.random() * 100 - 50}px);
-              opacity: 0;
-            }
-          }
-        `;
-        document.head.appendChild(style);
         
         meteor.style.animation = `fall ${duration}s linear ${delay}s forwards`;
         meteorContainer.appendChild(meteor);
@@ -998,29 +1139,50 @@
           if (meteor.parentNode) meteor.remove();
         }, (duration + delay) * 1000);
         
-        if (Math.random() < 0.3) console.log('⭐ Star fell at position', Math.round(startX));
-        
         return meteor;
       }
       
-      for (let i = 0; i < 3; i++) {
-        setTimeout(() => createMeteor(), i * 2000);
+      // Создаём CSS для анимации падения
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fall {
+          0% {
+            transform: translateY(0) translateX(0);
+            opacity: 0;
+          }
+          10% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 0.8;
+          }
+          100% {
+            transform: translateY(100vh) translateX(${Math.random() * 100 - 50}px);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // Создаём начальные метеоры
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => createMeteor(), i * 1000);
       }
       
+      // Периодическое создание новых метеоров
       setInterval(() => {
         if (document.visibilityState === 'visible') {
           createMeteor();
         }
-      }, 3000);
+      }, 2000);
     }
 
-    // 2. Частицы энергии вокруг шкалы
+    // 3. Частицы энергии вокруг шкалы
     function createEnergyParticles() {
-      console.log('Creating energy particles...');
       const particleContainer = document.getElementById('energyParticles');
       const energyCircle = document.querySelector('.energy-circle');
       
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 15; i++) {
         const particle = document.createElement('div');
         particle.className = 'energy-particle';
         
@@ -1030,16 +1192,17 @@
         
         const isBlue = Math.random() > 0.5;
         particle.style.background = isBlue
-          ? 'radial-gradient(circle, #00ccff, rgba(0, 204, 255, 0.3))'
-          : 'radial-gradient(circle, #9d4edd, rgba(157, 78, 221, 0.3))';
+          ? 'radial-gradient(circle, #00ccff, rgba(0, 204, 255, 0.4))'
+          : 'radial-gradient(circle, #9d4edd, rgba(157, 78, 221, 0.4))';
         
-        const duration = Math.random() * 4 + 3;
+        const duration = Math.random() * 3 + 2;
         const delay = Math.random() * 2;
         
         particle.style.animation = `particleOrbit ${duration}s linear ${delay}s infinite`;
         particleContainer.appendChild(particle);
       }
       
+      // Обновление скорости частиц при готовности
       const observer = new MutationObserver(() => {
         const isReady = energyCircle.classList.contains('ready');
         const particles = document.querySelectorAll('.energy-particle');
@@ -1047,10 +1210,8 @@
         particles.forEach(p => {
           if (isReady) {
             p.classList.add('fast');
-            p.style.animationPlayState = 'running';
           } else {
             p.classList.remove('fast');
-            p.style.animationPlayState = 'running';
           }
         });
       });
@@ -1061,26 +1222,38 @@
       });
     }
 
-    // 3. tsParticles космический фон
+    // 4. tsParticles космический фон
     function initParticles() {
       if (typeof tsParticles === 'undefined') {
         console.warn('tsParticles not loaded, skipping particle background');
         return;
       }
       
-      console.log('Initializing tsParticles...');
-      
       tsParticles.load('particles-js', {
         fpsLimit: 60,
         particles: {
-          number: { value: 40 },
-          color: { value: ['#00ccff', '#9d4edd', '#ffffff'] },
+          number: { 
+            value: 60, // Больше частиц
+            density: {
+              enable: true,
+              value_area: 800
+            }
+          },
+          color: { 
+            value: ['#00ccff', '#9d4edd', '#ffffff', '#00ff9d']
+          },
           shape: { type: 'circle' },
-          opacity: { value: 0.5, random: true },
-          size: { value: 1, random: { enable: true, minimumValue: 0.5 } },
+          opacity: { 
+            value: 0.7, // Более заметные
+            random: true 
+          },
+          size: { 
+            value: 1.5, // Крупнее
+            random: { enable: true, minimumValue: 0.8 }
+          },
           move: {
             enable: true,
-            speed: 0.3,
+            speed: 0.5, // Быстрее
             direction: 'none',
             random: true,
             straight: false,
@@ -1089,7 +1262,7 @@
           twinkle: {
             particles: {
               enable: true,
-              frequency: 0.05,
+              frequency: 0.1,
               opacity: 1
             }
           }
@@ -1101,35 +1274,12 @@
         },
         detectRetina: true,
         background: { color: 'transparent' }
-      }).then(() => {
-        console.log('tsParticles initialized successfully');
-      }).catch(error => {
-        console.error('Error initializing tsParticles:', error);
       });
-    }
-
-    // 4. Звёздное поле
-    function createStarfield() {
-      console.log('Creating starfield...');
-      const starfield = document.getElementById('starfield');
-      for (let i = 0; i < 150; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-        star.style.width = Math.random() * 3 + 'px';
-        star.style.height = star.style.width;
-        star.style.left = Math.random() * 100 + '%';
-        star.style.top = Math.random() * 100 + '%';
-        star.style.opacity = Math.random() * 0.5 + 0.3;
-        star.style.animationDelay = Math.random() * 3 + 's';
-        starfield.appendChild(star);
-      }
     }
 
     // ========== ОСНОВНАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ UI ==========
     function updateUI() {
       try {
-        console.log('Updating UI...');
-        
         // 1. Баланс
         elements.balance.textContent = `Баланс: ${gameState.balance} коинов ★`;
         
@@ -1158,13 +1308,13 @@
         
         if (progress >= 100) {
           elements.energyText.textContent = 'ГОТОВО!';
-          elements.energyText.style.color = '#00ff00';
+          elements.energyText.classList.add('ready');
           elements.energyCircle.classList.add('ready');
           elements.collectBtn.classList.add('ready');
         } else {
           const secondsLeft = Math.ceil((chargeTime - elapsed) / 1000);
           elements.energyText.textContent = secondsLeft;
-          elements.energyText.style.color = '#00ffcc';
+          elements.energyText.classList.remove('ready');
           elements.energyCircle.classList.remove('ready');
           elements.collectBtn.classList.remove('ready');
         }
@@ -1267,8 +1417,6 @@
           psiCard.classList.toggle('disabled', gameState.balance < psiCosts[psiLevel]);
         }
         
-        console.log('UI updated successfully');
-        
       } catch (error) {
         console.error('Error in updateUI:', error);
         elements.status.textContent = 'Ошибка обновления интерфейса';
@@ -1276,31 +1424,25 @@
     }
 
     // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
-
+    
     // 1. Сбор энергии
     elements.collectBtn.addEventListener('click', function() {
-      console.log('=== CLICK ON COLLECT ===');
-      
       const chargeTime = getChargeTime() * 1000;
       const elapsed = Date.now() - gameState.lastEnergyCollectTime;
       
       if (elapsed < chargeTime) {
-        console.log('Energy not ready yet');
         elements.status.textContent = 'Энергия ещё не готова!';
         setTimeout(() => elements.status.textContent = '', 2000);
         return;
       }
       
       const reward = getBaseReward();
-      console.log(`Collecting ${reward} coins`);
-      
       gameState.balance += reward;
       gameState.energiesCollected += 1;
       
       if (gameState.energiesCollected >= 5) {
         gameState.moonLevel += 1;
         gameState.energiesCollected = 0;
-        console.log(`Level up! New level: ${gameState.moonLevel}`);
         elements.status.textContent = `🎉 Уровень ${gameState.moonLevel}! +${reward} коинов!`;
         animateLevelZoom();
       } else {
@@ -1318,29 +1460,23 @@
 
     // 2. Ускорение через рекламу
     elements.boostBtn.addEventListener('click', function() {
-      console.log('=== CLICK ON BOOST ===');
-      
       const timeSinceLastAd = Date.now() - gameState.lastAdWatchTime;
       if (timeSinceLastAd < 90000) {
         const secondsLeft = Math.ceil((90000 - timeSinceLastAd) / 1000);
-        console.log(`Ad cooldown active: ${secondsLeft} seconds left`);
         elements.status.textContent = `Подождите ${secondsLeft} секунд`;
         setTimeout(() => elements.status.textContent = '', 2000);
         return;
       }
       
       if (gameState.dailyAdCounter >= 40) {
-        console.log('Daily ad limit reached');
         elements.status.textContent = 'Дневной лимит рекламы исчерпан!';
         setTimeout(() => elements.status.textContent = '', 3000);
         return;
       }
       
-      console.log('Loading ad...');
       elements.status.textContent = 'Загружаем рекламу...';
       
       if (typeof window.show_10555515 !== 'function') {
-        console.error('Ad SDK not found');
         elements.status.textContent = 'Рекламный SDK не загружен';
         setTimeout(() => elements.status.textContent = '', 3000);
         return;
@@ -1348,8 +1484,6 @@
       
       window.show_10555515()
         .then(() => {
-          console.log('Ad watched successfully');
-          
           const reward = getAdReward();
           gameState.balance += reward;
           gameState.energiesCollected += 1;
@@ -1388,27 +1522,21 @@
 
     // 3. Открытие сундука
     elements.chestBtn.addEventListener('click', function() {
-      console.log('=== CLICK ON CHEST ===');
-      
       const chestTimeLeft = gameState.nextChestTime - Date.now();
       
       if (chestTimeLeft > 0) {
-        console.log('Chest not ready yet');
         elements.status.textContent = 'Сундук ещё не готов!';
         setTimeout(() => elements.status.textContent = '', 2000);
         return;
       }
       
       if (gameState.chestOpened) {
-        console.log('Chest already opened');
         elements.status.textContent = 'Вы уже открыли этот сундук!';
         setTimeout(() => elements.status.textContent = '', 2000);
         return;
       }
       
       const reward = getChestReward();
-      console.log(`Opening chest: ${reward} coins`);
-      
       gameState.balance += reward;
       gameState.chestOpened = true;
       gameState.nextChestTime = Date.now() + 6 * 3600000;
@@ -1432,18 +1560,12 @@
 
     // 4. Карточка Квантового Ускорителя
     elements.upgradeQuantum.addEventListener('click', function() {
-      console.log('=== CLICK ON QUANTUM UPGRADE ===');
-      
-      if (this.classList.contains('disabled')) {
-        console.log('Upgrade disabled');
-        return;
-      }
+      if (this.classList.contains('disabled')) return;
       
       const costs = [1200, 3000, 7500, 18000, 40000];
       const currentLevel = gameState.upgradeQuantum;
       
       if (currentLevel >= 5) {
-        console.log('Already max level');
         elements.status.textContent = 'Достигнут максимальный уровень!';
         setTimeout(() => elements.status.textContent = '', 2000);
         return;
@@ -1452,13 +1574,10 @@
       const cost = costs[currentLevel];
       
       if (gameState.balance < cost) {
-        console.log(`Not enough coins: need ${cost}, have ${gameState.balance}`);
         elements.status.textContent = `Недостаточно коинов! Нужно: ${cost}`;
         setTimeout(() => elements.status.textContent = '', 2000);
         return;
       }
-      
-      console.log(`Buying quantum upgrade level ${currentLevel + 1} for ${cost} coins`);
       
       gameState.balance -= cost;
       gameState.upgradeQuantum += 1;
@@ -1476,18 +1595,12 @@
 
     // 5. Карточка Пси-усилителя
     elements.upgradePsi.addEventListener('click', function() {
-      console.log('=== CLICK ON PSI UPGRADE ===');
-      
-      if (this.classList.contains('disabled')) {
-        console.log('Upgrade disabled');
-        return;
-      }
+      if (this.classList.contains('disabled')) return;
       
       const costs = [2000, 5000, 12000, 28000, 60000];
       const currentLevel = gameState.upgradePsi;
       
       if (currentLevel >= 5) {
-        console.log('Already max level');
         elements.status.textContent = 'Достигнут максимальный уровень!';
         setTimeout(() => elements.status.textContent = '', 2000);
         return;
@@ -1496,13 +1609,10 @@
       const cost = costs[currentLevel];
       
       if (gameState.balance < cost) {
-        console.log(`Not enough coins: need ${cost}, have ${gameState.balance}`);
         elements.status.textContent = `Недостаточно коинов! Нужно: ${cost}`;
         setTimeout(() => elements.status.textContent = '', 2000);
         return;
       }
-      
-      console.log(`Buying psi upgrade level ${currentLevel + 1} for ${cost} coins`);
       
       gameState.balance -= cost;
       gameState.upgradePsi += 1;
@@ -1522,7 +1632,6 @@
     // ========== АНИМАЦИОННЫЕ ФУНКЦИИ ==========
     
     function animateLevelZoom() {
-      console.log('Animating level up zoom');
       const zoomElement = document.getElementById('levelUpZoom');
       zoomElement.classList.remove('level-up-zoom');
       void zoomElement.offsetWidth;
@@ -1530,7 +1639,6 @@
     }
     
     function animateCoinExplosion(amount, x, y) {
-      console.log(`Animating coin explosion: ${amount} coins at (${x}, ${y})`);
       const explosion = document.getElementById('coinExplosion');
       explosion.innerHTML = '';
       
@@ -1560,7 +1668,7 @@
       bigReward.textContent = `+${amount}`;
       bigReward.style.left = x + 'px';
       bigReward.style.top = y + 'px';
-      bigReward.style.fontSize = '36px';
+      bigReward.style.fontSize = '32px';
       bigReward.style.color = '#ffd700';
       bigReward.style.textShadow = '0 0 20px gold, 0 0 40px gold';
       document.body.appendChild(bigReward);
@@ -1571,7 +1679,6 @@
     }
     
     function createFlyingCoins(amount, startElement) {
-      console.log(`Creating flying coins: ${amount} from element`);
       const balanceElement = document.getElementById('balance');
       const balanceRect = balanceElement.getBoundingClientRect();
       const startRect = startElement.getBoundingClientRect();
@@ -1606,7 +1713,6 @@
     }
 
     // ========== ИНИЦИАЛИЗАЦИЯ ИГРЫ ==========
-    console.log('Initializing game...');
     
     // Создаём космические анимации
     createStarfield();
@@ -1634,7 +1740,6 @@
     });
     
     console.log('=== MOON ENERGY INITIALIZED SUCCESSFULLY ===');
-    console.log('Game state:', gameState);
     
   </script>
 </body>
