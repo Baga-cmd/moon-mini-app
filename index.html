@@ -781,13 +781,13 @@
 
   <div id="topBar">
     <div class="top-card" id="balanceCard">
-      <div class="balance-text">Баланс</div>
-      <div class="balance-value" id="balanceValue">44771</div>
+      <div class="balance-text">БАЛАНС</div>
+      <div class="balance-value" id="balanceValue">7091</div>
     </div>
     <div class="top-card" id="levelCard">
-      <div class="level-text">Уровень Луны</div>
-      <div class="level-value" id="levelValue">11</div>
-      <div class="level-progress" id="levelProgress">2/5 энергии</div>
+      <div class="level-text">УРОВЕНЬ ЛУНЫ</div>
+      <div class="level-value" id="levelValue">12</div>
+      <div class="level-progress" id="levelProgress">4/5 энергии</div>
     </div>
   </div>
   
@@ -796,8 +796,8 @@
       <div class="energy-circle" id="energyCircle">
         <div id="moonPhase" class="moon-phase-3"></div>
         <button id="collectBtnInside" class="disabled">
-          <div class="collect-text" id="collectText">Ждите...</div>
-          <div class="collect-timer" id="collectTimer">12 сек</div>
+          <div class="collect-text" id="collectText">ЖДИТЕ...</div>
+          <div class="collect-timer" id="collectTimer">15 сек</div>
         </button>
       </div>
     </div>
@@ -810,7 +810,7 @@
     </div>
 
     <div id="chestSection">
-      <div id="chestTimer">Следующий сундук через: 5:37:59</div>
+      <div id="chestTimer">Следующий сундук через: 0:44:37</div>
       <button id="chestBtn">Открыть сундук</button>
     </div>
 
@@ -855,16 +855,16 @@
 
     let gameState = (() => {
       const defaultState = {
-        balance: 44771,
-        moonLevel: 11,
-        energiesCollected: 2,
+        balance: 7091,
+        moonLevel: 12,
+        energiesCollected: 4,
         upgradeQuantum: 4,
         upgradePsi: 2,
-        lastEnergyCollectTime: Date.now() - 12000,
+        lastEnergyCollectTime: Date.now() - 15000,
         lastAdWatchTime: 0,
         dailyAdCounter: 0,
         lastResetDate: new Date().toDateString(),
-        nextChestTime: Date.now() + 5*60*60*1000 + 37*60*1000 + 59*1000,
+        nextChestTime: Date.now() + 44*60*1000 + 37*1000,
         chestOpened: false
       };
 
